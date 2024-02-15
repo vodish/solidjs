@@ -4,7 +4,7 @@
 
 Проект переписан
 
-Solidjs вместо Reactjs/RTK2
+Solidjs вместо React/RTK2
 
 Vite вместо cra
 
