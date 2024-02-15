@@ -9,11 +9,14 @@ import { ingredients, ingredientsResource } from './store/ingredienResource';
 function App() {
 
   ingredientsResource()
-  
+
+  // const ingredientsRequest = ingredientsResource()
+  // console.log(ingredientsRequest.state)
+
 
   return <>
     <div class={styles.App}>
-
+      
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       
       <For each={ingredients}>
@@ -30,6 +33,8 @@ function App() {
       </For>
 
     </div>
+
+
     <div style={{"text-align": "center", "margin-top": "2em"}}>
       <img src="https://code.s3.yandex.net/react/code/bun-01-large.png" alt="bun-01" />
     </div>
