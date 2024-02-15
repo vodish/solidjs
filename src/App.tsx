@@ -1,7 +1,7 @@
-import { For, Match, Show, Switch, createEffect } from 'solid-js';
+import { For, Match, Switch } from 'solid-js';
 import styles from './App.module.css';
 import { store1 } from './store/store';
-import { ingredients, ingredientsResource } from './store/ingredienResource';
+import { ingredients, ingredientsResource } from './store/ingrediens';
 
 
 
@@ -16,7 +16,7 @@ function App() {
 
   return <>
     <div class={styles.App}>
-      
+
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       
       <For each={ingredients}>
