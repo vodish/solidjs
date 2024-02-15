@@ -1,5 +1,5 @@
 import { For, Match, Switch } from 'solid-js';
-import styles from './App.module.css';
+import cm from './App.module.css';
 import { setStore1, store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 
@@ -15,7 +15,7 @@ function App() {
 
 
   return <>
-    <div class={styles.App}>
+    <div class={cm.App}>
 
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       
