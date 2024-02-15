@@ -1,6 +1,6 @@
 import { For, Match, Switch } from 'solid-js';
 import styles from './App.module.css';
-import { store1 } from './store/store';
+import { setStore1, store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 
 
@@ -20,13 +20,19 @@ function App() {
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       
       <For each={ingredients}>
-        {item => <p>{item.name}</p>}
+        {(item, i) => {
+          if ( i() > 3 )  return;
+          return <p>{item.name}</p>
+        }}
       </For>
 
 
 
       <h3>Количество пользователей: {store1.userCount}</h3>
       
+      <button onClick={()=> setStore1("users", store1.users.length, store1.users[0])}>Добавить</button>
+      <button >Удалить</button>
+
       <hr />
       <For each={store1.users} fallback={<div>Загружаю...</div>}>
         {(item) => <div>{JSON.stringify(item)}</div>}
