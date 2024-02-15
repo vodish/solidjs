@@ -1,4 +1,4 @@
-import { unwrap } from 'solid-js/store';
+import { For } from 'solid-js';
 import styles from './App.module.css';
 import { store1, setStore1 } from './store/store';
 
@@ -7,7 +7,13 @@ import { store1, setStore1 } from './store/store';
 function App() {
   return (
     <div class={styles.App}>
-      {store1.users[0].username}
+
+      <h3>Количество пользователей: {store1.userCount}</h3>
+
+      <hr />
+      <For each={store1.users} fallback={<div>Загружаю...</div>}>
+        {(item) => <div>{JSON.stringify(item)}</div>}
+      </For>
     </div>
   );
 }

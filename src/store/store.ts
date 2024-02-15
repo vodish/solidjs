@@ -1,3 +1,4 @@
+import { createEffect } from "solid-js"
 import { createStore } from "solid-js/store" 
 
 
@@ -23,4 +24,9 @@ export const [store1, setStore1] = createStore({
         loggedIn: true,
         },
     ],
+})
+
+
+createEffect(()=>{
+    setStore1("userCount", store1.users.length)
 })
