@@ -3,8 +3,6 @@ import { TIngredient, TIngredietsFetch } from "../utils/types";
 import { createEffect, createResource } from "solid-js";
 
 
-
-  
 export const [ingredients, setIngredients] = createStore<TIngredient[]>([])
 
 

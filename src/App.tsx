@@ -1,8 +1,8 @@
-import { For, Match, Show, Switch, createEffect, createResource } from 'solid-js';
+import { For, Match, Show, Switch, createEffect } from 'solid-js';
 import styles from './App.module.css';
-import { store1, setStore1 } from './store/store';
+import { store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingredienResource';
-import { unwrap } from 'solid-js/store';
+
 
 
 
@@ -10,11 +10,6 @@ function App() {
 
   ingredientsResource()
   
-  // createEffect(()=>{
-  //   console.log( unwrap(ingredients) )
-  // })
-
-
 
   return <>
     <div class={styles.App}>
@@ -25,7 +20,7 @@ function App() {
         {item => <p>{item.name}</p>}
       </For>
 
-      
+
 
       <h3>Количество пользователей: {store1.userCount}</h3>
       
@@ -35,7 +30,7 @@ function App() {
       </For>
 
     </div>
-    <div style={{"text-align": "center"}}>
+    <div style={{"text-align": "center", "margin-top": "2em"}}>
       <img src="https://code.s3.yandex.net/react/code/bun-01-large.png" alt="bun-01" />
     </div>
   </>
