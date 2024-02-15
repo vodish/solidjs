@@ -6,19 +6,19 @@ export const [store1, setStore1] = createStore({
     users: [
         {
         id: 0,
-        username: "felix909",
+        username: "Петя",
         location: "England",
         loggedIn: false,
         },
         {
         id: 1,
-        username: "tracy634",
+        username: "Коля",
         location: "Canada",
         loggedIn: true,
         },
         {
         id: 1,
-        username: "johny123",
+        username: "Маша",
         location: "India",
         loggedIn: true,
         },
