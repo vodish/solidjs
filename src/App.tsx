@@ -39,10 +39,11 @@ function App() {
   const [ ingredients ] = createResource<TIngredietsFetch>(fetchIngredients)
 
   createEffect(()=> {
+    if ( ingredients.state != 'ready' ) return;
     console.log( ingredients()?.data )
   })
 
-  return (
+  return <>
     <div class={styles.App}>
 
       <h3>Запрос на сервер</h3>
@@ -64,7 +65,10 @@ function App() {
       </For>
 
     </div>
-  );
+    <div style={{"text-align": "center"}}>
+      <img src="https://code.s3.yandex.net/react/code/bun-01-large.png" alt="bun-01" />
+    </div>
+  </>
 }
 
 export default App;
