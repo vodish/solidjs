@@ -2,6 +2,9 @@ import { For, Match, Switch, createSignal, createEffect } from 'solid-js';
 import cm from './App.module.css';
 import { setStore1, store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
+import Editor from './components/editor/Editor';
+
+
 
 
 
@@ -14,15 +17,18 @@ function App() {
   // console.log(ingredientsRequest.state)
 
 
+
   return <>
     <div class={cm.App}>
 
       <h3>Editor</h3>
 
-      <div css-editor contenteditable="plaintext-only">sdvsd</div>
+      <Editor cssClass={cm.editor} children='555' />
 
 
-
+      <br />
+      <br />
+      <br />
 
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       

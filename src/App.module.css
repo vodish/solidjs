@@ -36,7 +36,7 @@
   }
 }
 
-[css-editor] {
+.editor {
   width: 700px;
   margin: 0 auto;
   text-align: left;
@@ -50,9 +50,5 @@
   letter-spacing: normal;
   line-height: 20px;
   padding: 10px;
-
   outline: none;
-  white-space: pre-wrap;
-  tab-size: 4; /* Ширина табуляции */
-
 }
