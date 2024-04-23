@@ -8,7 +8,7 @@ import { ingredients, ingredientsResource } from './store/ingrediens';
 
 function App() {
 
-  ingredientsResource()
+  // ingredientsResource()
 
   // const ingredientsRequest = ingredientsResource()
   // console.log(ingredientsRequest.state)
@@ -16,6 +16,13 @@ function App() {
 
   return <>
     <div class={cm.App}>
+
+      <h3>Editor</h3>
+
+      <div css-editor contenteditable="plaintext-only">sdvsd</div>
+
+
+
 
       <h3>Количество ингредиентов: {ingredients.length}</h3>
       
@@ -25,8 +32,6 @@ function App() {
           return <p>{item.name}</p>
         }}
       </For>
-
-
 
       <h3>Количество пользователей: {store1.userCount}</h3>
       
@@ -41,9 +46,9 @@ function App() {
     </div>
 
 
-    <div style={{"text-align": "center", "margin-top": "2em"}}>
+    {/* <div style={{"text-align": "center", "margin-top": "2em"}}>
       <img src="https://code.s3.yandex.net/react/code/bun-01-large.png" alt="bun-01" />
-    </div>
+    </div> */}
   </>
 }
 
