@@ -16,14 +16,15 @@ function App() {
   // const ingredientsRequest = ingredientsResource()
   // console.log(ingredientsRequest.state)
 
-
+  const ttt1 = {ids: [0, 2, 3, 4], rows: ["111", "222", "", "444"]};
+  const ttt2 = {ids: [1], rows: ['']};
 
   return <>
     <div class={cm.App}>
 
       <h3>Editor</h3>
 
-      <Editor cssClass={cm.editor} children='555' />
+      <Editor cssClass={cm.editor} children={ttt1} />
 
 
       <br />
