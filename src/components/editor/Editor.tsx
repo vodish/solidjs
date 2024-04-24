@@ -73,5 +73,11 @@ export default function Editor({ cssClass, children = '' }: TEditorProp) {
     console.log(e);
   }
 
-  return <div class={cssClass} contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{children}</div>
+
+  return(
+    <div class={cssClass} style={{display: "flex", gap: '5px'}}>
+      <div style={{"color": '#ccc', "border-right": 'solid 1px #eee'}}>1</div>
+      <div style={{"flex-grow": '1', outline: 'none'}} contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{children}</div>
+    </div>
+  )
 }
