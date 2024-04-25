@@ -14,9 +14,10 @@
 }
 
 .editor>[css-area]>[css-ids] {
-  padding: 9px 0;
+  padding: 10px 0;
   line-height: 20px;
   color: #ccc;
+  font-family: "Source Code Pro", monospace;
   white-space: pre;
 }
 
