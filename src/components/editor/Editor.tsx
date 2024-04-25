@@ -1,12 +1,7 @@
-import { DOMElement } from 'solid-js/jsx-runtime';
+import { createSignal } from "solid-js"
 import em from '../../Editor.module.css';
 
-/*
-обработчики
-  https://docs.solidjs.com/concepts/components/event-handlers
-*/
-
-import { createSignal } from "solid-js"
+// обработчики https://docs.solidjs.com/concepts/components/event-handlers
 
 
 type TEditorProp = {
@@ -16,8 +11,6 @@ type TEditorProp = {
     rows: string[],
   }
 }
-
-
 
 export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
@@ -91,7 +84,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   }
 
-  
+
 
   function paste(e: ClipboardEvent) {
     console.log('paste')
