@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js"
+import { createSignal, JSX } from "solid-js"
 import em from '../../Editor.module.css';
 
 // обработчики https://docs.solidjs.com/concepts/components/event-handlers
@@ -14,26 +14,13 @@ type TEditorProp = {
 
 export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
-  const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
-  const [ids, setIds] = createSignal(children.ids)
-  const [rows, setRows] = createSignal(children.rows.join("\n"))
-
-  // console.log(max())
-  // console.log(ids())
-  // console.log(rows())
-
-
   function focus(e: FocusEvent) {
-    getPosition(e.target as HTMLElement)
+    // console.log('focus')
+    // getPosition()
   }
 
   function click(e: MouseEvent) {
-    getPosition(e.target as HTMLElement)
-  }
-
-  function getPosition(node: HTMLElement) {
-
-    console.log('проверить выделение', node);
+    getPosition(e.target as Node)
   }
 
 
@@ -87,28 +74,63 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function paste(e: ClipboardEvent) {
-    console.log('paste')
-    // e.preventDefault()
+    e.preventDefault()
     const content = e.clipboardData?.getData('text/plain') // содержит вставляемые символы
-    console.log('вставка', content)
+    console.log('paste:', content)
 
   }
 
   function input(e: InputEvent) {
+    // setRows(e.target.)
     // console.log('input')
     // console.log(e.data) // содержит введенный текст: один символ или несколько, через вставку
-    // console.log(e)
+    // @ts-ignore
+    console.log(e.target.innerText)
+    // setRows(e.currentTarget.va)
+    // printNodes()
+
   }
 
+
+
+  const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
+  const [ids, setIds] = createSignal(children.ids)
+  const [rows, setRows] = createSignal(children.rows)
+
+
+  // let area!: HTMLDivElement;
+
+  function getPosition(area: Node) {
+    const sel = document.getSelection()
+    if (!area.firstChild) return;
+    if (!sel || !sel.anchorNode) return;
+
+
+    const range = new Range();
+    range.setStartBefore(area.firstChild); // от начала документа
+    range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
+
+    // применим выделение, объясняется далее
+    sel.removeAllRanges(); // снять выделение, на всякий случай
+    sel.addRange(range); // добавить выделение до текущего курсора
+    const text = range.cloneContents().textContent; // скопировать текст до курсора
+    range.collapse(false); // свернуть выделение к курсору
+
+    console.log(text?.split("\n"));
+  }
+
+  function printNodes() {
+    console.log(rows());
+  }
 
 
   return (
     <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
-        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{rows()}</div>
+        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{rows().map(r => `${r}\n`)}</div>
       </div>
-      <div css-nodes></div>
+      {/* <div css-nodes>{rows().map(r => <div>{r}</div>)}</div> */}
     </div>
   )
 }
