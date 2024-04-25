@@ -1,0 +1,35 @@
+.editor {
+  width: 700px;
+  margin: 0 auto;
+  text-align: left;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.editor>[css-area] {
+  display: flex;
+  gap: 1ch;
+}
+
+.editor>[css-area]>[css-ids] {
+  padding: 9px 0;
+  line-height: 20px;
+  color: #ccc;
+  white-space: pre;
+}
+
+.editor [css-area]>[css-rows] {
+  width: 700px;
+  margin: 0 auto;
+  text-align: left;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  font-family: "Source Code Pro", monospace;
+  min-height: 240px;
+  letter-spacing: normal;
+  padding: 10px;
+  outline: none;
+}

@@ -1,5 +1,6 @@
 import { For, Match, Switch, createSignal, createEffect } from 'solid-js';
 import cm from './App.module.css';
+import em from './Editor.module.css';
 import { setStore1, store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 import Editor from './components/editor/Editor';
@@ -17,16 +18,16 @@ function App() {
   // console.log(ingredientsRequest.state)
 
   const ttt1 = {ids: [0, 2, 3, 4], rows: ["111", "222", "", "444"]};
-  const ttt2 = {ids: [1], rows: ['']};
+  
 
   return <>
     <div class={cm.App}>
 
       <h3>Editor</h3>
 
-      <Editor cssClass={cm.editor} children={ttt1} />
-
-
+      
+      <Editor css={em.editor} children={ttt1} />
+      
       <br />
       <br />
       <br />

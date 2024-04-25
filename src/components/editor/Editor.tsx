@@ -7,7 +7,7 @@ import { createSignal } from "solid-js"
 
 
 type TEditorProp = {
-  cssClass?: string
+  css?: CSSModuleClasses[string],
   children?: {
     ids: number[],
     rows: string[],
@@ -16,11 +16,11 @@ type TEditorProp = {
 
 
 
-export default function Editor({ cssClass, children = { ids: [0], rows: [''] } }: TEditorProp) {
+export default function Editor({ css, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
-  const [ max, setMax ] = createSignal(Math.max.apply(null, children.ids));
-  const [ ids, setIds ] = createSignal(children.ids)
-  const [ rows, setRows ] = createSignal(children.rows)
+  const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
+  const [ids, setIds] = createSignal(children.ids)
+  const [rows, setRows] = createSignal(children.rows)
 
   console.log(max())
   console.log(ids())
@@ -33,10 +33,24 @@ export default function Editor({ cssClass, children = { ids: [0], rows: [''] } }
   function keydown(e: KeyboardEvent) {
     if (e.code === 'Tab') {
       e.preventDefault()
-      // взять количество символов до начала строки
+
+      //  взять количество символов до начала строки
       //  поделить на 4, взять остаток от деления или 4
-      // добаить 
+      //  добаить 
+
+    } else if (e.code === 'Delete') {
+
+      // взять символ после курсора
+      console.log(e.code)
+
     }
+    else if (e.code === 'Backspace') {
+
+      // взять символ перед за курсором
+      console.log(e.code)
+    }
+
+
   }
 
   function keyup(e: KeyboardEvent) {
@@ -82,10 +96,11 @@ export default function Editor({ cssClass, children = { ids: [0], rows: [''] } }
 
 
 
-  return (
-    <div class={cssClass} style={{ display: "flex", gap: '1ch' }}>
-      <div style={{ "color": '#ccc', "border-right": 'solid 1px #eee', "padding-right": '0.5ch', "white-space": 'pre' }}>{ids().join("\n")}</div>
-      <div style={{ "flex-grow": '1', outline: 'none' }} contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
+  return <div class={css}>
+    <div css-area>
+      <div css-ids>{ids().join("\n")}</div>
+      <div css-rows style={{ "flex-grow": '1', outline: 'none' }} contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
     </div>
-  )
+    <div css-nodes>sdv</div>
+  </div>
 }
