@@ -7,7 +7,7 @@ import { createSignal } from "solid-js"
 
 
 type TEditorProp = {
-  css?: CSSModuleClasses[string],
+  cm?: CSSModuleClasses[string],
   children?: {
     ids: number[],
     rows: string[],
@@ -16,7 +16,7 @@ type TEditorProp = {
 
 
 
-export default function Editor({ css, children = { ids: [0], rows: [''] } }: TEditorProp) {
+export default function Editor({ cm, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
@@ -96,11 +96,13 @@ export default function Editor({ css, children = { ids: [0], rows: [''] } }: TEd
 
 
 
-  return <div class={css}>
-    <div css-area>
-      <div css-ids>{ids().join("\n")}</div>
-      <div css-rows style={{ "flex-grow": '1', outline: 'none' }} contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
+  return (
+    <div class={cm}>
+      <div css-area>
+        <div css-ids>{ids().join("\n")}</div>
+        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
+      </div>
+      <div css-nodes>sdv</div>
     </div>
-    <div css-nodes>sdv</div>
-  </div>
+  )
 }

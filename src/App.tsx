@@ -26,7 +26,7 @@ function App() {
       <h3>Editor</h3>
 
       
-      <Editor css={em.editor} children={ttt1} />
+      <Editor cm={em.editor} children={ttt1} />
       
       <br />
       <br />
