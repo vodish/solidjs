@@ -1,6 +1,5 @@
 import { For, Match, Switch, createSignal, createEffect } from 'solid-js';
 import cm from './App.module.css';
-import em from './Editor.module.css';
 import { setStore1, store1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 import Editor from './components/editor/Editor';
@@ -26,7 +25,7 @@ function App() {
       <h3>Editor</h3>
 
       
-      <Editor cm={em.editor} children={ttt1} />
+      <Editor children={ttt1} />
       
       <br />
       <br />

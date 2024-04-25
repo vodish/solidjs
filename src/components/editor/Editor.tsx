@@ -1,3 +1,5 @@
+import em from '../../Editor.module.css';
+
 /*
 обработчики
   https://docs.solidjs.com/concepts/components/event-handlers
@@ -7,7 +9,7 @@ import { createSignal } from "solid-js"
 
 
 type TEditorProp = {
-  cm?: CSSModuleClasses[string],
+  cssModule?: CSSModuleClasses[string],
   children?: {
     ids: number[],
     rows: string[],
@@ -16,7 +18,7 @@ type TEditorProp = {
 
 
 
-export default function Editor({ cm, children = { ids: [0], rows: [''] } }: TEditorProp) {
+export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
@@ -97,7 +99,7 @@ export default function Editor({ cm, children = { ids: [0], rows: [''] } }: TEdi
 
 
   return (
-    <div class={cm}>
+    <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
         <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
