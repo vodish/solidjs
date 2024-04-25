@@ -1,3 +1,4 @@
+import { DOMElement } from 'solid-js/jsx-runtime';
 import em from '../../Editor.module.css';
 
 /*
@@ -22,13 +23,26 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
-  const [rows, setRows] = createSignal(children.rows)
+  const [rows, setRows] = createSignal(children.rows.join("\n"))
 
-  console.log(max())
-  console.log(ids())
-  console.log(rows())
+  // console.log(max())
+  // console.log(ids())
+  // console.log(rows())
 
-  // setRow(children);
+
+  function focus(e: FocusEvent) {
+    getPosition(e.target as HTMLElement)
+  }
+
+  function click(e: MouseEvent) {
+    getPosition(e.target as HTMLElement)
+  }
+
+  function getPosition(node: HTMLElement) {
+
+    console.log('проверить выделение', node);
+  }
+
 
 
 
@@ -51,9 +65,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       // взять символ перед за курсором
       console.log(e.code)
     }
-
-
   }
+
+
 
   function keyup(e: KeyboardEvent) {
     if (e.code === 'Enter') {
@@ -77,6 +91,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   }
 
+  
+
   function paste(e: ClipboardEvent) {
     console.log('paste')
     // e.preventDefault()
@@ -92,19 +108,14 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
 
-  function focus(e: FocusEvent) {
-    console.log(e);
-  }
-
-
 
   return (
     <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
-        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} >{rows().join("\n")}</div>
+        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{rows()}</div>
       </div>
-      <div css-nodes>sdv</div>
+      <div css-nodes></div>
     </div>
   )
 }
