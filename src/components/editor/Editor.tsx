@@ -105,18 +105,24 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     if (!area.firstChild) return;
     if (!sel || !sel.anchorNode) return;
 
+    // проверить наличие выделения мышкой
+    // console.log(sel.isCollapsed)
 
     const range = new Range();
     range.setStartBefore(area.firstChild); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     // применим выделение, объясняется далее
-    sel.removeAllRanges(); // снять выделение, на всякий случай
+    // sel.isCollapsed
+    // sel.removeAllRanges(); // снять выделение, на всякий случай
     sel.addRange(range); // добавить выделение до текущего курсора
     const text = range.cloneContents().textContent; // скопировать текст до курсора
-    range.collapse(false); // свернуть выделение к курсору
 
-    console.log(text?.split("\n"));
+    if (sel.isCollapsed) {
+      range.collapse(false); // свернуть выделение к курсору
+    }
+
+    console.log(text?.split("\n").length);
   }
 
   function printNodes() {
