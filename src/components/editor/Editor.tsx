@@ -145,7 +145,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
-        <div ref={content} css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+        <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
         <div>
           <div css-line>line: {line()}</div>
           <div ref={debug} css-nodes />

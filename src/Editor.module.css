@@ -1,5 +1,5 @@
 .editor {
-  width: 700px;
+  width: 800px;
   margin: 0 auto;
   text-align: left;
 
@@ -21,8 +21,9 @@
   white-space: pre;
 }
 
-.editor>[css-area]>[css-rows] {
-  width: 700px;
+.editor>[css-area]>[css-editor] {
+  width: 500px;
+  flex-shrink: 0;
   margin: 0 auto;
   text-align: left;
   background: #fff;
@@ -42,6 +43,7 @@
 
 .editor [css-nodes] {
   /* border: solid 1px #ccc; */
+  width: 200px;
   margin: 0 0 0 2ch;
   padding: 0 10px;
 }
