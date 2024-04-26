@@ -16,7 +16,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function click(e: MouseEvent) {
-    getPosition(e.target as Node)
+    getPosition()
   }
 
 
@@ -71,39 +71,43 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   function paste(e: ClipboardEvent) {
     // e.preventDefault()
-    const content = e.clipboardData?.getData('text/plain') // содержит вставляемые символы
-    console.log('paste:', content)
+    // const selection = window.getSelection();
 
+    // let content = e.clipboardData?.getData('text/plain') || '' // содержит вставляемые символы
+    // // content = '------';
+
+    // if ( !selection ) return false;
+    // selection.deleteFromDocument();
+    // selection.getRangeAt(0).insertNode(document.createTextNode(content));
+    // selection.collapseToEnd()
   }
 
   function input(e: InputEvent) {
-    nodeTree()
+    setDebug()
   }
 
+
+  let content!: HTMLDivElement;
+  let debug!: HTMLDivElement;
 
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
-  const [rows, setRows] = createSignal(children.rows)
-
 
   onMount(() => {
-    nodeTree()
+    setDebug();
   })
 
-  let area!: HTMLDivElement;
-  let debug!: HTMLDivElement;
-
-  function getPosition(area: Node) {
+  function getPosition() {
     const sel = document.getSelection()
-    if (!area.firstChild) return;
+    if (!content.firstChild) return;
     if (!sel || !sel.anchorNode) return;
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
 
     const range = new Range();
-    range.setStartBefore(area.firstChild); // от начала документа
+    range.setStartBefore(content.firstChild); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     // применим выделение, объясняется далее
@@ -120,24 +124,23 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
   function focus(e: FocusEvent) {
-    console.log(area.childNodes)
+    console.log(content.childNodes)
   }
 
 
-
-  function nodeTree() {
+  function setDebug() {
     debug.innerHTML = '';
 
-    area.childNodes.forEach(node => {
+    content.childNodes.forEach(node => {
       const name = document.createElement("div")
       name.setAttribute('css-node-name', '');
       name.appendChild(document.createTextNode(node.nodeName));
-      
+
       const value = document.createElement("div")
       value.setAttribute('css-node-value', '');
       const nodeValue = String(node.nodeValue).replace(/\n/g, '{n}')
       value.appendChild(document.createTextNode(nodeValue));
-      
+
       const div = document.createElement("div");
       div.appendChild(name)
       div.appendChild(value)
@@ -150,9 +153,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
-        <div ref={area} css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join('\n')}</div>
+        <div ref={content} css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
       </div>
-      <div ref={debug} css-nodes></div>
+      <div ref={debug} css-nodes />
     </div>
   )
 }

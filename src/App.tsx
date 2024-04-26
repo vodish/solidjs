@@ -1,6 +1,6 @@
 import { For, Match, Switch, createSignal, createEffect } from 'solid-js';
 import cm from './App.module.css';
-import { setStore1, store1 } from './store/store';
+import { store1, setStore1, effectStore1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 import Editor from './components/editor/Editor';
 
@@ -11,6 +11,7 @@ import Editor from './components/editor/Editor';
 
 function App() {
 
+  effectStore1();
   // ingredientsResource()
 
   // const ingredientsRequest = ingredientsResource()
@@ -44,10 +45,10 @@ function App() {
       <span style={{color: 'red'}}>red</span>
       </p>
 
-      <h3>Количество пользователей: {/*@once*/ store1.userCount}</h3>
+      <h3>Количество пользователей: {store1.userCount}</h3>
 
       <button onClick={() => setStore1("users", store1.users.length, store1.users[0])}>Добавить</button>
-      <button >Удалить</button>
+      <button onClick={() => ('')}>Удалить</button>
 
       <hr />
       <For each={store1.users} fallback={<div>Загружаю...</div>}>
