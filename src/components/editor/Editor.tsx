@@ -1,4 +1,4 @@
-import { createSignal, JSX } from "solid-js"
+import { createSignal, JSX, onMount } from "solid-js"
 import em from '../../Editor.module.css';
 
 // обработчики https://docs.solidjs.com/concepts/components/event-handlers
@@ -14,10 +14,6 @@ type TEditorProp = {
 
 export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
 
-  function focus(e: FocusEvent) {
-    // console.log('focus')
-    // getPosition()
-  }
 
   function click(e: MouseEvent) {
     getPosition(e.target as Node)
@@ -81,14 +77,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
   function input(e: InputEvent) {
-    // setRows(e.target.)
-    // console.log('input')
-    // console.log(e.data) // содержит введенный текст: один символ или несколько, через вставку
-    // @ts-ignore
-    console.log(e.target.innerText)
-    // setRows(e.currentTarget.va)
-    // printNodes()
-
+    nodeTree()
   }
 
 
@@ -96,9 +85,14 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
   const [rows, setRows] = createSignal(children.rows)
+  
 
+  onMount(() => {
+    nodeTree()
+  })
 
-  // let area!: HTMLDivElement;
+  let area!: HTMLDivElement;
+  let debug!: HTMLDivElement;
 
   function getPosition(area: Node) {
     const sel = document.getSelection()
@@ -125,8 +119,37 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     console.log(text?.split("\n").length);
   }
 
-  function printNodes() {
-    console.log(rows());
+  function focus(e: FocusEvent) {
+    console.log(area.childNodes)
+  }
+
+
+
+  function nodeTree() {
+    // let list: JSX.Element[] = [];
+    // let list1 = <></>;
+
+    // function printNode(node: ChildNode) {
+    //   return <div>
+    //     <div css-node-name>{node.nodeName}</div>
+    //     <div css-node-value>{node.nodeValue?.replace(/\n/, '{n}')}</div>
+    //   </div>
+    // }
+    // console.log(area.childNodes)
+    // area.childNodes.forEach(async (element) => {
+    //   list.push(<PrintNode node={element} />)
+    //   list1 = <>{list1}<PrintNode node={element} /></>
+    // });
+
+    const newDiv = document.createElement("div");
+    const newContent = document.createTextNode("Hi there and greetings! " + Date.now());
+
+    // add the text node to the newly created div
+    newDiv.appendChild(newContent);
+
+    debug.innerHTML = '';
+    debug.appendChild(newDiv);
+    // return newDiv;
   }
 
 
@@ -134,9 +157,18 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     <div class={cssModule}>
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
-        <div css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{rows().map(r => `${r}\n`)}</div>
+        <div ref={area} css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join('\n')}</div>
       </div>
-      {/* <div css-nodes>{rows().map(r => <div>{r}</div>)}</div> */}
+      <div ref={debug} css-nodes></div>
     </div>
   )
+}
+
+
+
+function PrintNode({node}: {node: ChildNode}) {
+  return <div>
+    <div css-node-name>{node.nodeName}</div>
+    <div css-node-value>{node.nodeValue?.replace(/\n/g, '{n}')}</div>
+  </div>
 }

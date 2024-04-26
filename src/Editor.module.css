@@ -36,11 +36,18 @@
 }
 
 .editor>[css-nodes] {
-  border: solid 1px #ccc;
+  /* border: solid 1px #ccc; */
   margin: 1em 0 0 2ch;
   padding: 10px;
 }
 
 .editor>[css-nodes]>div {
-  min-height: 1em;
+  display: flex;
+  gap: 0.3ch;
+  border: solid 1px #ccc;
+  margin-bottom: 2px;
+}
+
+.editor>[css-nodes]>div>[css-node-name] {
+  border-right: solid 1px #ccc;
 }
