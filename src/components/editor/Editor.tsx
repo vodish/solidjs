@@ -46,8 +46,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function keyup(e: KeyboardEvent) {
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Delete', 'Backspace'].includes(e.code)) {
+      getPosition() // получить строку
+    }
+    
+    console.log('keyup', e.code, 'добавить строку')
     if (e.code === 'Enter') {
-      // console.log('keyup', e.code, 'добавить строку')
     }
 
     if (e.code === 'Tab' && !e.shiftKey) {
