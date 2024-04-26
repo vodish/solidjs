@@ -69,18 +69,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
 
-  function paste(e: ClipboardEvent) {
-    // e.preventDefault()
-    // const selection = window.getSelection();
-
-    // let content = e.clipboardData?.getData('text/plain') || '' // содержит вставляемые символы
-    // // content = '------';
-
-    // if ( !selection ) return false;
-    // selection.deleteFromDocument();
-    // selection.getRangeAt(0).insertNode(document.createTextNode(content));
-    // selection.collapseToEnd()
-  }
+  function paste(e: ClipboardEvent) { }
 
   function input(e: InputEvent) {
     setDebug()
@@ -93,6 +82,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
+  const [line, setLine] = createSignal(0)
 
   onMount(() => {
     setDebug();
@@ -120,7 +110,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       range.collapse(false); // свернуть выделение к курсору
     }
 
-    console.log(text?.split("\n").length);
+    const line = text?.split("\n").length || 0;
+
+    setLine(line);
   }
 
   function focus(e: FocusEvent) {
@@ -154,8 +146,11 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       <div css-area>
         <div css-ids>{ids().join("\n")}</div>
         <div ref={content} css-rows contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+        <div>
+          <div css-line>line: {line()}</div>
+          <div ref={debug} css-nodes />
+        </div>
       </div>
-      <div ref={debug} css-nodes />
     </div>
   )
 }

@@ -35,20 +35,25 @@
   outline: none;
 }
 
-.editor>[css-nodes] {
-  /* border: solid 1px #ccc; */
-  margin: 1em 0 0 2ch;
+.editor [css-line] {
+  margin: 0 2ch;
   padding: 10px;
 }
 
-.editor>[css-nodes]>div {
+.editor [css-nodes] {
+  /* border: solid 1px #ccc; */
+  margin: 0 0 0 2ch;
+  padding: 0 10px;
+}
+
+.editor [css-nodes]>div {
   display: flex;
   gap: 0.3ch;
   border: solid 1px #ccc;
   margin-bottom: 2px;
 }
 
-.editor>[css-nodes]>div>[css-node-name] {
+.editor [css-nodes]>div>[css-node-name] {
   border-right: solid 1px #ccc;
   padding: 0 3px;
 }
