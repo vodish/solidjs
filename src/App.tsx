@@ -40,6 +40,10 @@ function App() {
         }}
       </For>
 
+      <p>
+      <span style={{color: 'red'}}>red</span>
+      </p>
+
       <h3>Количество пользователей: {/*@once*/ store1.userCount}</h3>
 
       <button onClick={() => setStore1("users", store1.users.length, store1.users[0])}>Добавить</button>

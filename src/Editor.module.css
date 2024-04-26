@@ -50,4 +50,5 @@
 
 .editor>[css-nodes]>div>[css-node-name] {
   border-right: solid 1px #ccc;
+  padding: 0 3px;
 }

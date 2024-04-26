@@ -70,7 +70,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function paste(e: ClipboardEvent) {
-    e.preventDefault()
+    // e.preventDefault()
     const content = e.clipboardData?.getData('text/plain') // содержит вставляемые символы
     console.log('paste:', content)
 
@@ -85,7 +85,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
   const [rows, setRows] = createSignal(children.rows)
-  
+
 
   onMount(() => {
     nodeTree()
@@ -126,30 +126,23 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function nodeTree() {
-    // let list: JSX.Element[] = [];
-    // let list1 = <></>;
-
-    // function printNode(node: ChildNode) {
-    //   return <div>
-    //     <div css-node-name>{node.nodeName}</div>
-    //     <div css-node-value>{node.nodeValue?.replace(/\n/, '{n}')}</div>
-    //   </div>
-    // }
-    // console.log(area.childNodes)
-    // area.childNodes.forEach(async (element) => {
-    //   list.push(<PrintNode node={element} />)
-    //   list1 = <>{list1}<PrintNode node={element} /></>
-    // });
-
-    const newDiv = document.createElement("div");
-    const newContent = document.createTextNode("Hi there and greetings! " + Date.now());
-
-    // add the text node to the newly created div
-    newDiv.appendChild(newContent);
-
     debug.innerHTML = '';
-    debug.appendChild(newDiv);
-    // return newDiv;
+
+    area.childNodes.forEach(node => {
+      const name = document.createElement("div")
+      name.setAttribute('css-node-name', '');
+      name.appendChild(document.createTextNode(node.nodeName));
+      
+      const value = document.createElement("div")
+      value.setAttribute('css-node-value', '');
+      const nodeValue = String(node.nodeValue).replace(/\n/g, '{n}')
+      value.appendChild(document.createTextNode(nodeValue));
+      
+      const div = document.createElement("div");
+      div.appendChild(name)
+      div.appendChild(value)
+      debug.appendChild(div)
+    });
   }
 
 
@@ -164,11 +157,3 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   )
 }
 
-
-
-function PrintNode({node}: {node: ChildNode}) {
-  return <div>
-    <div css-node-name>{node.nodeName}</div>
-    <div css-node-value>{node.nodeValue?.replace(/\n/g, '{n}')}</div>
-  </div>
-}
