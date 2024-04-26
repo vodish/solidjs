@@ -11,7 +11,8 @@ import Editor from './components/editor/Editor';
 
 function App() {
 
-  effectStore1();
+  effectStore1(); // подключить эффекты стора
+
   // ingredientsResource()
 
   // const ingredientsRequest = ingredientsResource()

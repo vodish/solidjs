@@ -27,11 +27,12 @@ export const [store1, setStore1] = createStore({
 })
 
 
-
+// createEffect(() => {
+//   setStore1("userCount", store1.users.length)
+// })
 
 export function effectStore1() {
   createEffect(() => {
     setStore1("userCount", store1.users.length)
   })
-
 }
