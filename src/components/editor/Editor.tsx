@@ -84,28 +84,24 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
     debugTree(); // отрисовать дебаг
 
-
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
 
-    // создать область выделения
+
+    // создать диапозон
     const range = new Range();
     range.setStartBefore(content.firstChild); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
-
-    // применим выделение
-    // sel.isCollapsed
-    sel.addRange(range); // добавить выделение до текущего курсора
-    const text = range.cloneContents().textContent; // скопировать текст до курсора
-
-    if (sel.isCollapsed) {
-      range.collapse(false); // свернуть выделение к курсору
-    }
+    
+    sel.addRange(range); // применить диапозон
+    const text = range.cloneContents().textContent; // скопировать текст диапозона
 
     const line = text?.split("\n").length || 0;
 
     setLine(line);
   }
+
+
 
 
 
@@ -145,7 +141,11 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
         <div css-ids>{ids().join("\n")}</div>
         <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
         <div>
-          <div css-line>line: {line()}</div>
+          <div css-line>
+            <span>line: {line()}</span>
+            <span>node: ?</span>
+            <span>offset: ?</span>
+          </div>
           <div ref={debugt} css-debugt />
         </div>
       </div>

@@ -40,7 +40,10 @@
 .editor [css-line] {
   margin: 0 2ch;
   padding: 10px;
+  display: flex;
+  gap: 1ch;
 }
+
 
 .editor [css-debugt] {
   /* border: solid 1px #ccc; */
