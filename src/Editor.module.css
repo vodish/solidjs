@@ -23,6 +23,7 @@
 
 .editor>[css-area]>[css-editor] {
   width: 500px;
+  align-self: flex-start;
   flex-shrink: 0;
   margin: 0 auto;
   text-align: left;

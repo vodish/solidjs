@@ -1,6 +1,6 @@
 import { For, Match, Switch, createSignal, createEffect } from 'solid-js';
 import cm from './App.module.css';
-import { store1, setStore1, effectStore1 } from './store/store';
+import { store1, setStore1 } from './store/store';
 import { ingredients, ingredientsResource } from './store/ingrediens';
 import Editor from './components/editor/Editor';
 
@@ -10,15 +10,13 @@ import Editor from './components/editor/Editor';
 
 
 function App() {
-
-  effectStore1(); // подключить эффекты стора
-
+  
   // ingredientsResource()
 
   // const ingredientsRequest = ingredientsResource()
   // console.log(ingredientsRequest.state)
 
-  const ttt1 = { ids: [0, 2, 3, 4], rows: ["111", "222", "", "444", ""] };
+  const ttt1 = { ids: [0, 2, 3, 4], rows: ["111", "222", "", "444"] };
 
 
   return <>
@@ -57,11 +55,7 @@ function App() {
       </For>
 
     </div>
-
-
-    {/* <div style={{"text-align": "center", "margin-top": "2em"}}>
-      <img src="https://code.s3.yandex.net/react/code/bun-01-large.png" alt="bun-01" />
-    </div> */}
+    
   </>
 }
 

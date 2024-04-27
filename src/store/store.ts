@@ -1,4 +1,4 @@
-import { createEffect } from "solid-js"
+import { createEffect, createRoot } from "solid-js"
 import { createStore } from "solid-js/store"
 
 
@@ -26,13 +26,9 @@ export const [store1, setStore1] = createStore({
   ],
 })
 
-
-// createEffect(() => {
-//   setStore1("userCount", store1.users.length)
-// })
-
-export function effectStore1() {
+createRoot(() => {
   createEffect(() => {
     setStore1("userCount", store1.users.length)
   })
-}
+})
+

@@ -49,7 +49,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Delete', 'Backspace'].includes(e.code)) {
       getPosition() // получить строку
     }
-    
+
     console.log('keyup', e.code, 'добавить строку')
     if (e.code === 'Enter') {
     }
@@ -79,6 +79,13 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     setDebug()
   }
 
+  function focus(e: FocusEvent) {
+    // console.log(content.childNodes)
+  }
+
+
+
+
 
   let content!: HTMLDivElement;
   let debug!: HTMLDivElement;
@@ -88,25 +95,27 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   const [ids, setIds] = createSignal(children.ids)
   const [line, setLine] = createSignal(0)
 
-  onMount(() => {
-    setDebug();
-  })
+
 
   function getPosition() {
     const sel = document.getSelection()
     if (!content.firstChild) return;
     if (!sel || !sel.anchorNode) return;
 
+    // отрисовать дебаг
+    setDebug();
+    
+
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
 
+    // создать область выделения
     const range = new Range();
     range.setStartBefore(content.firstChild); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
-    // применим выделение, объясняется далее
+    // применим выделение
     // sel.isCollapsed
-    // sel.removeAllRanges(); // снять выделение, на всякий случай
     sel.addRange(range); // добавить выделение до текущего курсора
     const text = range.cloneContents().textContent; // скопировать текст до курсора
 
@@ -119,30 +128,36 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     setLine(line);
   }
 
-  function focus(e: FocusEvent) {
-    console.log(content.childNodes)
-  }
-
+  
 
   function setDebug() {
     debug.innerHTML = '';
+    const sel = document.getSelection()
+    
 
     content.childNodes.forEach(node => {
-      const name = document.createElement("div")
-      name.setAttribute('css-node-name', '');
-      name.appendChild(document.createTextNode(node.nodeName));
+      const name = document.createElement("div") // для каждого дочернего узла в редакторе
+      name.setAttribute('css-node-name', '')
+      name.appendChild(document.createTextNode(node.nodeName))
 
       const value = document.createElement("div")
-      value.setAttribute('css-node-value', '');
-      const nodeValue = String(node.nodeValue).replace(/\n/g, '{n}')
-      value.appendChild(document.createTextNode(nodeValue));
+      value.setAttribute('css-node-value', '')
 
-      const div = document.createElement("div");
+      let nodeValue = String(node.nodeValue)
+      if ( node === sel?.anchorNode ) {
+        nodeValue = nodeValue.substring(0, sel.anchorOffset) + '|' + nodeValue.substring(sel.anchorOffset) // нарисовать курсор
+      }
+      nodeValue = nodeValue.replace(/\n/g, '{n}') // нарисовать перевод строки
+      value.appendChild(document.createTextNode(nodeValue))
+
+      const div = document.createElement("div")
       div.appendChild(name)
       div.appendChild(value)
       debug.appendChild(div)
     });
   }
+
+
 
 
   return (
