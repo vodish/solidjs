@@ -74,6 +74,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
   const [line, setLine] = createSignal(0)
+  const [offset, setOffset] = createSignal(0)
 
 
 
@@ -86,6 +87,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
+    setOffset(sel.anchorOffset)
+    console.log(sel.anchorNode.textContent?.substring(0, sel.anchorOffset), sel.anchorOffset)
 
 
     // создать диапозон
@@ -144,7 +147,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
           <div css-line>
             <span>line: {line()}</span>
             <span>node: ?</span>
-            <span>offset: ?</span>
+            <span>offset: {offset()}</span>
           </div>
           <div ref={debugt} css-debugt />
         </div>
