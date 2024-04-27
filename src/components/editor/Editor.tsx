@@ -20,8 +20,6 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
 
-
-
   function keydown(e: KeyboardEvent) {
     if (e.code === 'Tab') {
       e.preventDefault()
@@ -50,23 +48,15 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       getPosition() // получить строку
     }
 
-    console.log('keyup', e.code, 'добавить строку')
-    if (e.code === 'Enter') {
+
+    if (['Enter', 'Delete', 'Backspace'].includes(e.code)) {
+      console.log('keyup', e.code, 'добавить строку')
     }
 
-    if (e.code === 'Tab' && !e.shiftKey) {
-      // console.log('keyup', e.code, 'подвинуть правee', '| emmet')
-    }
-    else if (e.code === 'Tab' && e.shiftKey) {
-      // console.log('keyup', e.code, 'подвинуть левее')
-    }
 
-    if (['ArrowLeft', 'ArrowRight'].includes(e.code)) {
-      // console.log('keyup', e.code, 'pos: ')
+    if (e.code === 'Tab' && !e.shiftKey) {      // console.log('keyup', e.code, 'подвинуть правee', '| emmet')
     }
-
-    if (['ArrowUp', 'ArrowDown'].includes(e.code)) {
-      // console.log('keyup', e.code, 'row: ')
+    else if (e.code === 'Tab' && e.shiftKey) {      // console.log('keyup', e.code, 'подвинуть левее')
     }
 
   }
@@ -74,22 +64,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   function paste(e: ClipboardEvent) { }
-
-  function input(e: InputEvent) {
-    setDebug()
-  }
-
-  function focus(e: FocusEvent) {
-    // console.log(content.childNodes)
-  }
-
-
-
+  function input(e: InputEvent) { }
+  function focus(e: FocusEvent) { }
 
 
   let content!: HTMLDivElement;
   let debug!: HTMLDivElement;
-
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
@@ -104,7 +84,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
     // отрисовать дебаг
     setDebug();
-    
+
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
@@ -128,12 +108,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     setLine(line);
   }
 
-  
+
 
   function setDebug() {
     debug.innerHTML = '';
     const sel = document.getSelection()
-    
+
 
     content.childNodes.forEach(node => {
       const name = document.createElement("div") // для каждого дочернего узла в редакторе
@@ -144,7 +124,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       value.setAttribute('css-node-value', '')
 
       let nodeValue = String(node.nodeValue)
-      if ( node === sel?.anchorNode ) {
+      if (node === sel?.anchorNode) {
         nodeValue = nodeValue.substring(0, sel.anchorOffset) + '|' + nodeValue.substring(sel.anchorOffset) // нарисовать курсор
       }
       nodeValue = nodeValue.replace(/\n/g, '{n}') // нарисовать перевод строки
