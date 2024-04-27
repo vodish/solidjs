@@ -42,21 +42,21 @@
   padding: 10px;
 }
 
-.editor [css-nodes] {
+.editor [css-debugt] {
   /* border: solid 1px #ccc; */
   width: 200px;
   margin: 0 0 0 2ch;
   padding: 0 10px;
 }
 
-.editor [css-nodes]>div {
+.editor [css-debugt]>div {
   display: flex;
   gap: 0.3ch;
   border: solid 1px #ccc;
   margin-bottom: 2px;
 }
 
-.editor [css-nodes]>div>[css-node-name] {
+.editor [css-debugt]>div>[css-node-name] {
   border-right: solid 1px #ccc;
   padding: 0 3px;
 }

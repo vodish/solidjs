@@ -1,4 +1,4 @@
-import { createSignal, JSX, onMount } from "solid-js"
+import { createSignal } from "solid-js"
 import em from '../../Editor.module.css';
 
 // обработчики https://docs.solidjs.com/concepts/components/event-handlers
@@ -69,7 +69,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
   let content!: HTMLDivElement;
-  let debug!: HTMLDivElement;
+  let debugt!: HTMLDivElement;
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
@@ -82,8 +82,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     if (!content.firstChild) return;
     if (!sel || !sel.anchorNode) return;
 
-    // отрисовать дебаг
-    setDebug();
+    debugTree(); // отрисовать дебаг
 
 
     // проверить наличие выделения мышкой
@@ -110,8 +109,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
 
 
-  function setDebug() {
-    debug.innerHTML = '';
+  function debugTree() {
+    debugt.innerHTML = '';
     const sel = document.getSelection()
 
 
@@ -133,7 +132,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       const div = document.createElement("div")
       div.appendChild(name)
       div.appendChild(value)
-      debug.appendChild(div)
+      debugt.appendChild(div)
     });
   }
 
@@ -147,7 +146,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
         <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
         <div>
           <div css-line>line: {line()}</div>
-          <div ref={debug} css-nodes />
+          <div ref={debugt} css-debugt />
         </div>
       </div>
     </div>

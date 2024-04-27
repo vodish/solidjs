@@ -20,18 +20,18 @@ function App() {
 
 
 
+  // function userCreate() {
+  //   setStore1('users', newArr => [newArr[newArr.length-1], ...newArr])
+  // }
   function userCreate() {
     setStore1('users', produce(newArr => {
-      newArr.push(newArr[0])
-      return newArr
+      newArr.unshift(newArr[0])
+      return newArr;
     }))
   }
 
   function userDelete() {
-    setStore1("users", produce(newArr => {
-      newArr.pop()
-      return newArr;
-    }))
+    setStore1("users", produce(newArr => newArr.splice(-1, 1)))
   }
 
 
