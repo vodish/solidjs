@@ -42,14 +42,14 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   function keyup(e: KeyboardEvent) {
     // console.log(e.code);
-
+    
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) {
       getPosition()
     }
 
 
     if (['Enter', 'NumpadEnter'].includes(e.code)) {
-      console.log(`добавить:${line0()}-${line1()}`)
+      addRow()
     }
 
     if (['Delete', 'Backspace'].includes(e.code)) {
@@ -86,29 +86,32 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   function getPosition() {
     const sel = document.getSelection()
-    if (!content.firstChild) return;
     if (!sel || !sel.anchorNode) return;
+    
+    if (!content.firstChild) {
+      content.appendChild(document.createTextNode('\n'));
+    }
 
     // вычислить начало строки: узел и позицию
     searchStart(sel.anchorNode, sel.anchorOffset);
 
-
-    debugTree(); // отрисовать дебаг
+    // отрисовать дерево узлов в дебаге
+    debugTree();
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
+
+    // установить смещение для отрисовки в дебаге
     setAnchorOffset(sel.anchorOffset)
-    // console.log(sel.anchorNode.textContent?.substring(0, sel.anchorOffset), sel.anchorOffset)
+    
 
-
-    // создать диапозон
+    // создать диапозон для определения номера строки
     const range = new Range();
-    range.setStartBefore(content.firstChild); // от начала документа
+    range.setStartBefore(content.firstChild as Node); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     sel.addRange(range); // применить диапозон
     const text = range.cloneContents().textContent; // скопировать текст диапозона
-
     const line = text?.split("\n").length || 0;
 
     if (line1() == 0) {
@@ -119,8 +122,6 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       setLine1(line)
     }
   }
-
-
 
   function searchStart(node: Node, offset: number = -1) {
     const content = node.textContent || '';
@@ -151,11 +152,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     }
   }
 
-
   function debugTree() {
     debugt.innerHTML = '';
     const sel = document.getSelection()
-
 
     content.childNodes.forEach(node => {
       const name = document.createElement("div") // для каждого дочернего узла в редакторе
@@ -165,11 +164,14 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       const value = document.createElement("div")
       value.setAttribute('css-node-value', '')
 
-      let nodeValue = String(node.nodeValue)
+      let nodeValue = String(node.nodeValue);
+      // нарисовать курсор
       if (node === sel?.anchorNode) {
-        nodeValue = nodeValue.substring(0, sel.anchorOffset) + '|' + nodeValue.substring(sel.anchorOffset) // нарисовать курсор
+        nodeValue = nodeValue.substring(0, sel.anchorOffset) + '|' + nodeValue.substring(sel.anchorOffset)
       }
-      nodeValue = nodeValue.replace(/\n/g, '{n}') // нарисовать перевод строки
+      // нарисовать перевод строки
+      nodeValue = nodeValue.replace(/\n/g, '{n}')
+      //
       value.appendChild(document.createTextNode(nodeValue))
 
       const div = document.createElement("div")
@@ -179,6 +181,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     });
   }
 
+  function addRow() {
+    console.log(`добавить:${line0()}-${line1()}`)
+  }
 
 
 
