@@ -19,7 +19,6 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     getPosition()
   }
 
-
   function keydown(e: KeyboardEvent) {
     if (e.code === 'Tab') {
       e.preventDefault()
@@ -41,30 +40,34 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     }
   }
 
-
-
   function keyup(e: KeyboardEvent) {
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Delete', 'Backspace'].includes(e.code)) {
-      getPosition() // получить строку
+    // console.log(e.code);
+
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) {
+      getPosition()
     }
 
 
-    if (['Enter', 'Delete', 'Backspace'].includes(e.code)) {
-      console.log('keyup', e.code, 'добавить строку')
+    if (['Enter', 'NumpadEnter'].includes(e.code)) {
+      console.log(`добавить:${line0()}-${line1()}`)
+    }
+
+    if (['Delete', 'Backspace'].includes(e.code)) {
+      console.log('keyup', e.code, 'удалить строку?')
     }
 
 
-    if (e.code === 'Tab' && !e.shiftKey) {      // console.log('keyup', e.code, 'подвинуть правee', '| emmet')
+    if (e.code === 'Tab' && !e.shiftKey) {      // добавить пробелы к строкам или emmet
     }
-    else if (e.code === 'Tab' && e.shiftKey) {      // console.log('keyup', e.code, 'подвинуть левее')
+    else if (e.code === 'Tab' && e.shiftKey) {      // удалить пробелы у строк
     }
 
   }
 
-
-
   function paste(e: ClipboardEvent) { }
+
   function input(e: InputEvent) { }
+
   function focus(e: FocusEvent) { }
 
 
@@ -73,8 +76,11 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
   const [ids, setIds] = createSignal(children.ids)
-  const [line, setLine] = createSignal(0)
-  const [offset, setOffset] = createSignal(0)
+  const [line0, setLine0] = createSignal(0)
+  const [line1, setLine1] = createSignal(0)
+  const [anchorOffset, setAnchorOffset] = createSignal(0)
+  const [startNode, setStartNode] = createSignal<HTMLElement|Node>(document.body)
+  const [startOffset, setStartOffset] = createSignal(-1)
 
 
 
@@ -83,29 +89,67 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     if (!content.firstChild) return;
     if (!sel || !sel.anchorNode) return;
 
+    // вычислить начало строки: узел и позицию
+    searchStart(sel.anchorNode, sel.anchorOffset);
+
+
     debugTree(); // отрисовать дебаг
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
-    setOffset(sel.anchorOffset)
-    console.log(sel.anchorNode.textContent?.substring(0, sel.anchorOffset), sel.anchorOffset)
+    setAnchorOffset(sel.anchorOffset)
+    // console.log(sel.anchorNode.textContent?.substring(0, sel.anchorOffset), sel.anchorOffset)
 
 
     // создать диапозон
     const range = new Range();
     range.setStartBefore(content.firstChild); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
-    
+
     sel.addRange(range); // применить диапозон
     const text = range.cloneContents().textContent; // скопировать текст диапозона
 
     const line = text?.split("\n").length || 0;
 
-    setLine(line);
+    if (line1() == 0) {
+      setLine0(line);
+      setLine1(line);
+    } else {
+      setLine0(line1())
+      setLine1(line)
+    }
   }
 
 
 
+  function searchStart(node: Node, offset: number = -1) {
+    const content = node.textContent || '';
+    setStartOffset(-1);
+
+    for (var pos = offset; pos > -1; pos--) { // найти \n в текущем узле
+      // console.log(pos, content.substring(pos - 1, pos) === "\n")
+      if (content.substring(pos - 1, pos) === "\n") {
+        setStartOffset(pos)
+        setStartNode(node)
+        break;
+      }
+    }
+
+    if (pos < 0) {
+      const parentNode = node.parentNode as HTMLElement;
+
+      if (node.previousSibling) {  // есть узел слева
+        searchStart(node.previousSibling, node.previousSibling.textContent?.length)
+      }
+      else if ( !parentNode.hasAttribute('css-editor') ) { // если узел выше не корневой
+        searchStart(parentNode, parentNode.textContent?.length)
+      }
+      else if (node.parentNode) { // иначе это первый узел от корня
+        setStartOffset(0)
+        setStartNode(node.parentNode )
+      }
+    }
+  }
 
 
   function debugTree() {
@@ -140,18 +184,15 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   return (
     <div class={cssModule}>
-      <div css-area>
-        <div css-ids>{ids().join("\n")}</div>
-        <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
-        <div>
-          <div css-line>
-            <span>line: {line()}</span>
-            <span>node: ?</span>
-            <span>offset: {offset()}</span>
-          </div>
-          <div ref={debugt} css-debugt />
-        </div>
+      <div css-ids>{ids().join("\n")}</div>
+      <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+      <div css-tth>
+        <div>line: {line0()},{line1()}</div>
+        <div>anchorOffset:{anchorOffset()}</div>
+        <div>startNode:{startNode().nodeName}</div>
+        <div>startOffset:{startOffset()}</div>
       </div>
+      <div ref={debugt} css-debugt />
     </div>
   )
 }

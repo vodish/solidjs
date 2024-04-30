@@ -1,5 +1,6 @@
 .editor {
-  width: 800px;
+  display: flex;
+  gap: 1ch;
   margin: 0 auto;
   text-align: left;
 
@@ -8,12 +9,8 @@
   line-height: 20px;
 }
 
-.editor>[css-area] {
-  display: flex;
-  gap: 1ch;
-}
 
-.editor>[css-area]>[css-ids] {
+.editor>[css-ids] {
   padding: 10px 0;
   line-height: 20px;
   color: #ccc;
@@ -21,11 +18,10 @@
   white-space: pre;
 }
 
-.editor>[css-area]>[css-editor] {
-  width: 500px;
+.editor>[css-editor] {
+  width: 400px;
   align-self: flex-start;
   flex-shrink: 0;
-  margin: 0 auto;
   text-align: left;
   background: #fff;
   border-radius: 6px;
@@ -37,10 +33,9 @@
   outline: none;
 }
 
-.editor [css-line] {
-  margin: 0 2ch;
-  padding: 10px;
+.editor [css-tth] {
   display: flex;
+  flex-direction: column;
   gap: 1ch;
 }
 
@@ -48,7 +43,6 @@
 .editor [css-debugt] {
   /* border: solid 1px #ccc; */
   width: 200px;
-  margin: 0 0 0 2ch;
   padding: 0 10px;
 }
 

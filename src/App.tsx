@@ -16,7 +16,7 @@ function App() {
 
   // const ingredientsRequest = ingredientsResource()
   // console.log(ingredientsRequest.state)
-  const ttt1 = { ids: [0, 2, 3, 4], rows: ["111", "222", "", "444"] };
+  const ttt1 = { ids: [0, 2, 3, 4], rows: ["123", "222", "", "444"] };
 
 
 
@@ -39,7 +39,7 @@ function App() {
     <div class={cm.App}>
       <Editor children={ttt1} />
 
-      <h3>Количество пользователей: {store1.userCount}</h3>
+      {/* <h3>Количество пользователей: {store1.userCount}</h3>
 
       <button onClick={userCreate}>Добавить</button>
       <button onClick={userDelete}>Удалить</button>
@@ -47,7 +47,7 @@ function App() {
       <hr />
       <For each={store1.users} fallback={<div>Загружаю...</div>}>
         {(item) => <div>{JSON.stringify(item)}</div>}
-      </For>
+      </For> */}
 
     </div>
 
