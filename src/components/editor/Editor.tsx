@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal } from "solid-js"
+import { createSignal } from "solid-js"
 import { unwrap } from "solid-js/store";
 import em from '../../Editor.module.css';
 
@@ -22,14 +22,17 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   let _lineWas = 0;
   let _lines = 0;
   let _linesWas = 0;
-  
+  let _ancorOffset = 0;
+  let _startNode: HTMLElement | Node = document.body;
+  let _startOffset = -1;
+
   const [ids, setIds] = createSignal(_ids)
   const [line, setLine] = createSignal(_line) // номер строки
   const [lineWas, setLineWas] = createSignal(_lineWas) // номер строки был
   const [lines, setLines] = createSignal(_lines) // количество строк
   const [linesWas, setLinesWas] = createSignal(_linesWas) // количество строк было
-  const [anchorOffset, setAnchorOffset] = createSignal(0)
-  const [startNode, setStartNode] = createSignal<HTMLElement | Node>(document.body)
+  const [anchorOffset, setAnchorOffset] = createSignal(_ancorOffset)
+  const [startNode, setStartNode] = createSignal(_startNode)
   const [startOffset, setStartOffset] = createSignal(-1)
 
 
@@ -38,30 +41,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     getPosition()
   }
 
-  function keydown(e: KeyboardEvent) {
-    if (e.code === 'Tab') {
-      e.preventDefault()
-
-      //  взять количество символов до начала строки
-      //  поделить на 4, взять остаток от деления или 4
-      //  добаить 
-
-    } else if (e.code === 'Delete') {
-
-      // взять символ после курсора
-      console.log(e.code)
-
-    }
-    else if (e.code === 'Backspace') {
-
-      // взять символ перед за курсором
-      console.log(e.code)
-    }
-  }
-
   function keyup(e: KeyboardEvent) {
     // console.log(e.code);
-    
+
     // получить позицию
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) {
       getPosition()
@@ -71,6 +53,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     if (['Enter', 'NumpadEnter'].includes(e.code)) {
       insertRow()
     }
+
+    if (['Delete', 'Backspace'].includes(e.code)) {
+      console.log('удалить строки', _lines, _linesWas)
+      // deleteRow(e.code)
+    }
+
 
     if (e.code === 'Tab' && !e.shiftKey) {      // добавить пробелы к строкам или emmet
     }
@@ -109,8 +97,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     setAnchorOffset(sel.anchorOffset)
 
     // всего строк
-    setLinesWas(lines());
-    setLines(_content.textContent?.split("\n").length || 0);
+    setLinesWas(_linesWas = _lines);
+    setLines(_lines = _content.textContent?.split("\n").length || 0)
 
     // создать диапозон для определения номера строки
     const range = new Range();
@@ -118,24 +106,18 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     sel.addRange(range); // применить диапозон
-    const text = range.cloneContents().textContent; // скопировать текст диапозона
-    const lineNum = text?.split("\n").length || 0;
+    const textBefore = range.cloneContents().textContent; // скопировать текст диапозона
+    const lineNum = textBefore?.split("\n").length || 0;
 
-    if (line() == 0) {
-      setLineWas(lineNum);
-      setLine(lineNum);
-    } else {
-      setLineWas(line())
-      setLine(lineNum)
-    }
+    setLineWas(_line = _line === 0 ? _line : lineNum)
+    setLine(_line = lineNum)
   }
 
   function searchStart(node: Node, offset: number = -1) {
     const content = node.textContent || '';
-    setStartOffset(-1);
+    setStartOffset(_startOffset = -1);
 
     for (var pos = offset; pos > -1; pos--) { // найти \n в текущем узле
-      // console.log(pos, content.substring(pos - 1, pos) === "\n")
       if (content.substring(pos - 1, pos) === "\n") {
         setStartOffset(pos)
         setStartNode(node)
@@ -216,7 +198,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   return (
     <div class={cssModule}>
       <div css-ids>{ids().join("\n")}</div>
-      <div ref={_content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+      <div ref={_content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
       <div css-tth>
         <div>lines: {lines()} ({linesWas()})</div>
         <div>line: {line()} ({lineWas()})</div>
