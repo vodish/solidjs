@@ -97,7 +97,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
     // всего строк
     setLinesWas(linesWas = lines);
-    setLines(lines = content.textContent?.split("\n").length || 0)
+    setLines(lines = content.textContent === '\n' ? 1 : content.textContent?.split("\n").length || 0)
+    // console.log(lines);
 
     // создать диапозон для определения номера строки
     const range = new Range();
@@ -183,9 +184,9 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     if (lines >= linesWas) return;
 
     let from = line;
-    from = keyCode==='Delete' && line !== lineWas ? line - 1: from;
+    from = keyCode === 'Delete' && line !== lineWas ? line - 1 : from;
     ids.splice(from, linesWas - lines);
-    
+
     setIds(ids = [...ids]);
   }
 
