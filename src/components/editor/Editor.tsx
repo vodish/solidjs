@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js"
+import { createEffect, createSignal } from "solid-js"
 import { unwrap } from "solid-js/store";
 import em from '../../Editor.module.css';
 
@@ -13,7 +13,7 @@ type TEditorProp = {
   }
 }
 
-export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
+export default function Editor({ cssModule = em.editor, children = { ids: [1], rows: [''] } }: TEditorProp) {
   let content!: HTMLDivElement;
   let debug!: HTMLDivElement;
   let max = Math.max.apply(null, children.ids);
@@ -55,8 +55,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     }
 
     if (['Delete', 'Backspace'].includes(e.code)) {
-      console.log('удалить строки', lines, linesWas)
-      // deleteRow(e.code)
+      deleteRow(e.code)
     }
 
 
@@ -109,7 +108,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     const textBefore = range.cloneContents().textContent; // скопировать текст диапозона
     const lineNum = textBefore?.split("\n").length || 0;
 
-    setLineWas(line = line === 0 ? line : lineNum)
+    setLineWas(lineWas = lineWas === 0 ? lineNum : line)
     setLine(line = lineNum)
   }
 
@@ -171,28 +170,23 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
   function insertRow() {
-    let one = unwrap(_ids())
+    let one = ids.slice(0, lineWas)
+    let three = ids.slice(lineWas)
     let two: number[] = []
-    let three = one.splice(_lineWas())
-    for (let i = _line() - _lineWas(); i > 0; i--) {
+    for (let i = line - lineWas; i > 0; i--) {
       two.push(++max);
     }
-    setIds([...one, ...two, ...three]);
+    setIds(ids = [...one, ...two, ...three]);
   }
 
   function deleteRow(keyCode: string) {
+    if (lines >= linesWas) return;
 
-    console.log(_lines(), _lineWas())
-
-    if (keyCode === 'Backspace' && _lines() < _lineWas()) {
-      let rows = unwrap(_ids())
-      let remove = rows.splice(_lines(), _lineWas() - _lines())
-      console.log(rows)
-      console.log(remove)
-    }
-    else if (keyCode === 'Delete') {
-
-    }
+    let from = line;
+    from = keyCode==='Delete' && line !== lineWas ? line - 1: from;
+    ids.splice(from, linesWas - lines);
+    
+    setIds(ids = [...ids]);
   }
 
   return (

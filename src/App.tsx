@@ -16,7 +16,7 @@ function App() {
 
   // const ingredientsRequest = ingredientsResource()
   // console.log(ingredientsRequest.state)
-  const ttt1 = { ids: [0, 2, 3, 4], rows: ["123", "222", "", "444"] };
+  const ttt1 = { ids: [1, 2, 3, 4], rows: ["123", "222", "", "444"] };
 
 
 
