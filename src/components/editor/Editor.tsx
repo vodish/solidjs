@@ -14,26 +14,26 @@ type TEditorProp = {
 }
 
 export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
-  let _content!: HTMLDivElement;
-  let _debug!: HTMLDivElement;
-  let _max = Math.max.apply(null, children.ids);
-  let _ids = children.ids;
-  let _line = 0;
-  let _lineWas = 0;
-  let _lines = 0;
-  let _linesWas = 0;
-  let _ancorOffset = 0;
-  let _startNode: HTMLElement | Node = document.body;
-  let _startOffset = -1;
+  let content!: HTMLDivElement;
+  let debug!: HTMLDivElement;
+  let max = Math.max.apply(null, children.ids);
+  let ids = children.ids;
+  let line = 0;
+  let lineWas = 0;
+  let lines = 0;
+  let linesWas = 0;
+  let ancorOffset = 0;
+  let startNode: HTMLElement | Node = document.body;
+  let startOffset = -1;
 
-  const [ids, setIds] = createSignal(_ids)
-  const [line, setLine] = createSignal(_line) // номер строки
-  const [lineWas, setLineWas] = createSignal(_lineWas) // номер строки был
-  const [lines, setLines] = createSignal(_lines) // количество строк
-  const [linesWas, setLinesWas] = createSignal(_linesWas) // количество строк было
-  const [anchorOffset, setAnchorOffset] = createSignal(_ancorOffset)
-  const [startNode, setStartNode] = createSignal(_startNode)
-  const [startOffset, setStartOffset] = createSignal(-1)
+  const [_ids, setIds] = createSignal(ids)
+  const [_line, setLine] = createSignal(line) // номер строки
+  const [_lineWas, setLineWas] = createSignal(lineWas) // номер строки был
+  const [_lines, setLines] = createSignal(lines) // количество строк
+  const [_linesWas, setLinesWas] = createSignal(linesWas) // количество строк было
+  const [_anchorOffset, setAnchorOffset] = createSignal(ancorOffset)
+  const [_startNode, setStartNode] = createSignal(startNode)
+  const [_startOffset, setStartOffset] = createSignal(-1)
 
 
 
@@ -55,7 +55,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     }
 
     if (['Delete', 'Backspace'].includes(e.code)) {
-      console.log('удалить строки', _lines, _linesWas)
+      console.log('удалить строки', lines, linesWas)
       // deleteRow(e.code)
     }
 
@@ -80,8 +80,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     const sel = document.getSelection()
     if (!sel || !sel.anchorNode) return;
 
-    if (!_content.firstChild) {
-      _content.appendChild(document.createTextNode('\n'));
+    if (!content.firstChild) {
+      content.appendChild(document.createTextNode('\n'));
     }
 
     // вычислить начало строки: узел и позицию
@@ -97,25 +97,25 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
     setAnchorOffset(sel.anchorOffset)
 
     // всего строк
-    setLinesWas(_linesWas = _lines);
-    setLines(_lines = _content.textContent?.split("\n").length || 0)
+    setLinesWas(linesWas = lines);
+    setLines(lines = content.textContent?.split("\n").length || 0)
 
     // создать диапозон для определения номера строки
     const range = new Range();
-    range.setStartBefore(_content.firstChild as Node); // от начала документа
+    range.setStartBefore(content.firstChild as Node); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     sel.addRange(range); // применить диапозон
     const textBefore = range.cloneContents().textContent; // скопировать текст диапозона
     const lineNum = textBefore?.split("\n").length || 0;
 
-    setLineWas(_line = _line === 0 ? _line : lineNum)
-    setLine(_line = lineNum)
+    setLineWas(line = line === 0 ? line : lineNum)
+    setLine(line = lineNum)
   }
 
   function searchStart(node: Node, offset: number = -1) {
     const content = node.textContent || '';
-    setStartOffset(_startOffset = -1);
+    setStartOffset(startOffset = -1);
 
     for (var pos = offset; pos > -1; pos--) { // найти \n в текущем узле
       if (content.substring(pos - 1, pos) === "\n") {
@@ -142,10 +142,10 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   }
 
   function debugTree() {
-    _debug.innerHTML = '';
+    debug.innerHTML = '';
     const sel = document.getSelection()
 
-    _content.childNodes.forEach(node => {
+    content.childNodes.forEach(node => {
       const name = document.createElement("div") // для каждого дочернего узла в редакторе
       name.setAttribute('css-node-name', '')
       name.appendChild(document.createTextNode(node.nodeName))
@@ -166,27 +166,27 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       const div = document.createElement("div")
       div.appendChild(name)
       div.appendChild(value)
-      _debug.appendChild(div)
+      debug.appendChild(div)
     });
   }
 
   function insertRow() {
-    let one = unwrap(ids())
+    let one = unwrap(_ids())
     let two: number[] = []
-    let three = one.splice(lineWas())
-    for (let i = line() - lineWas(); i > 0; i--) {
-      two.push(++_max);
+    let three = one.splice(_lineWas())
+    for (let i = _line() - _lineWas(); i > 0; i--) {
+      two.push(++max);
     }
     setIds([...one, ...two, ...three]);
   }
 
   function deleteRow(keyCode: string) {
 
-    console.log(lines(), lineWas())
+    console.log(_lines(), _lineWas())
 
-    if (keyCode === 'Backspace' && lines() < lineWas()) {
-      let rows = unwrap(ids())
-      let remove = rows.splice(lines(), lineWas() - lines())
+    if (keyCode === 'Backspace' && _lines() < _lineWas()) {
+      let rows = unwrap(_ids())
+      let remove = rows.splice(_lines(), _lineWas() - _lines())
       console.log(rows)
       console.log(remove)
     }
@@ -197,16 +197,16 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
   return (
     <div class={cssModule}>
-      <div css-ids>{ids().join("\n")}</div>
-      <div ref={_content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+      <div css-ids>{_ids().join("\n")}</div>
+      <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
       <div css-tth>
-        <div>lines: {lines()} ({linesWas()})</div>
-        <div>line: {line()} ({lineWas()})</div>
-        <div>anchorOffset:{anchorOffset()}</div>
-        <div>startNode:{startNode().nodeName}</div>
-        <div>startOffset:{startOffset()}</div>
+        <div>lines: {_lines()} ({_linesWas()})</div>
+        <div>line: {_line()} ({_lineWas()})</div>
+        <div>anchorOffset:{_anchorOffset()}</div>
+        <div>startNode:{_startNode().nodeName}</div>
+        <div>startOffset:{_startOffset()}</div>
       </div>
-      <div ref={_debug} css-debugt />
+      <div ref={debug} css-debugt />
     </div>
   )
 }
