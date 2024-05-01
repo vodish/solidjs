@@ -1,4 +1,5 @@
-import { createSignal } from "solid-js"
+import { createEffect, createMemo, createSignal } from "solid-js"
+import { unwrap } from "solid-js/store";
 import em from '../../Editor.module.css';
 
 // обработчики https://docs.solidjs.com/concepts/components/event-handlers
@@ -13,6 +14,24 @@ type TEditorProp = {
 }
 
 export default function Editor({ cssModule = em.editor, children = { ids: [0], rows: [''] } }: TEditorProp) {
+  let _content!: HTMLDivElement;
+  let _debug!: HTMLDivElement;
+  let _max = Math.max.apply(null, children.ids);
+  let _ids = children.ids;
+  let _line = 0;
+  let _lineWas = 0;
+  let _lines = 0;
+  let _linesWas = 0;
+  
+  const [ids, setIds] = createSignal(_ids)
+  const [line, setLine] = createSignal(_line) // номер строки
+  const [lineWas, setLineWas] = createSignal(_lineWas) // номер строки был
+  const [lines, setLines] = createSignal(_lines) // количество строк
+  const [linesWas, setLinesWas] = createSignal(_linesWas) // количество строк было
+  const [anchorOffset, setAnchorOffset] = createSignal(0)
+  const [startNode, setStartNode] = createSignal<HTMLElement | Node>(document.body)
+  const [startOffset, setStartOffset] = createSignal(-1)
+
 
 
   function click(e: MouseEvent) {
@@ -43,19 +62,15 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   function keyup(e: KeyboardEvent) {
     // console.log(e.code);
     
+    // получить позицию
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) {
       getPosition()
     }
 
-
+    // добавить строки
     if (['Enter', 'NumpadEnter'].includes(e.code)) {
-      addRow()
+      insertRow()
     }
-
-    if (['Delete', 'Backspace'].includes(e.code)) {
-      console.log('keyup', e.code, 'удалить строку?')
-    }
-
 
     if (e.code === 'Tab' && !e.shiftKey) {      // добавить пробелы к строкам или emmet
     }
@@ -71,25 +86,14 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
   function focus(e: FocusEvent) { }
 
 
-  let content!: HTMLDivElement;
-  let debugt!: HTMLDivElement;
-
-  const [max, setMax] = createSignal(Math.max.apply(null, children.ids));
-  const [ids, setIds] = createSignal(children.ids)
-  const [line0, setLine0] = createSignal(0)
-  const [line1, setLine1] = createSignal(0)
-  const [anchorOffset, setAnchorOffset] = createSignal(0)
-  const [startNode, setStartNode] = createSignal<HTMLElement|Node>(document.body)
-  const [startOffset, setStartOffset] = createSignal(-1)
-
 
 
   function getPosition() {
     const sel = document.getSelection()
     if (!sel || !sel.anchorNode) return;
-    
-    if (!content.firstChild) {
-      content.appendChild(document.createTextNode('\n'));
+
+    if (!_content.firstChild) {
+      _content.appendChild(document.createTextNode('\n'));
     }
 
     // вычислить начало строки: узел и позицию
@@ -103,23 +107,26 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
 
     // установить смещение для отрисовки в дебаге
     setAnchorOffset(sel.anchorOffset)
-    
+
+    // всего строк
+    setLinesWas(lines());
+    setLines(_content.textContent?.split("\n").length || 0);
 
     // создать диапозон для определения номера строки
     const range = new Range();
-    range.setStartBefore(content.firstChild as Node); // от начала документа
+    range.setStartBefore(_content.firstChild as Node); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
 
     sel.addRange(range); // применить диапозон
     const text = range.cloneContents().textContent; // скопировать текст диапозона
-    const line = text?.split("\n").length || 0;
+    const lineNum = text?.split("\n").length || 0;
 
-    if (line1() == 0) {
-      setLine0(line);
-      setLine1(line);
+    if (line() == 0) {
+      setLineWas(lineNum);
+      setLine(lineNum);
     } else {
-      setLine0(line1())
-      setLine1(line)
+      setLineWas(line())
+      setLine(lineNum)
     }
   }
 
@@ -142,21 +149,21 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       if (node.previousSibling) {  // есть узел слева
         searchStart(node.previousSibling, node.previousSibling.textContent?.length)
       }
-      else if ( !parentNode.hasAttribute('css-editor') ) { // если узел выше не корневой
+      else if (!parentNode.hasAttribute('css-editor')) { // если узел выше не корневой
         searchStart(parentNode, parentNode.textContent?.length)
       }
       else if (node.parentNode) { // иначе это первый узел от корня
         setStartOffset(0)
-        setStartNode(node.parentNode )
+        setStartNode(node.parentNode)
       }
     }
   }
 
   function debugTree() {
-    debugt.innerHTML = '';
+    _debug.innerHTML = '';
     const sel = document.getSelection()
 
-    content.childNodes.forEach(node => {
+    _content.childNodes.forEach(node => {
       const name = document.createElement("div") // для каждого дочернего узла в редакторе
       name.setAttribute('css-node-name', '')
       name.appendChild(document.createTextNode(node.nodeName))
@@ -177,27 +184,47 @@ export default function Editor({ cssModule = em.editor, children = { ids: [0], r
       const div = document.createElement("div")
       div.appendChild(name)
       div.appendChild(value)
-      debugt.appendChild(div)
+      _debug.appendChild(div)
     });
   }
 
-  function addRow() {
-    console.log(`добавить:${line0()}-${line1()}`)
+  function insertRow() {
+    let one = unwrap(ids())
+    let two: number[] = []
+    let three = one.splice(lineWas())
+    for (let i = line() - lineWas(); i > 0; i--) {
+      two.push(++_max);
+    }
+    setIds([...one, ...two, ...three]);
   }
 
+  function deleteRow(keyCode: string) {
 
+    console.log(lines(), lineWas())
+
+    if (keyCode === 'Backspace' && lines() < lineWas()) {
+      let rows = unwrap(ids())
+      let remove = rows.splice(lines(), lineWas() - lines())
+      console.log(rows)
+      console.log(remove)
+    }
+    else if (keyCode === 'Delete') {
+
+    }
+  }
 
   return (
     <div class={cssModule}>
       <div css-ids>{ids().join("\n")}</div>
-      <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+      <div ref={_content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onKeyDown={keydown} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
       <div css-tth>
-        <div>line: {line0()},{line1()}</div>
+        <div>lines: {lines()} ({linesWas()})</div>
+        <div>line: {line()} ({lineWas()})</div>
         <div>anchorOffset:{anchorOffset()}</div>
         <div>startNode:{startNode().nodeName}</div>
         <div>startOffset:{startOffset()}</div>
       </div>
-      <div ref={debugt} css-debugt />
+      <div ref={_debug} css-debugt />
     </div>
   )
 }
