@@ -102,7 +102,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
     // всего строк
     setLinesWas(countWas = count);
-    setLines(count = content.textContent?.split("\n").length || 1)
+    setLines(count = content.textContent?.replace(/\n$/, '').split("\n").length || 1)
 
 
     // создать диапозон для определения номера строки
