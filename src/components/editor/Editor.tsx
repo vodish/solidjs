@@ -87,24 +87,31 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
     if (!content.firstChild) {
       content.appendChild(document.createTextNode('\n'));
+      console.log('\\n')
     }
+
+    // content.textContent = content.textContent?.replace(/\n\n$/, '\n') as string;
+    
+
 
     // вычислить начало строки: узел и позицию
     searchStart(sel.anchorNode, sel.anchorOffset);
 
+
+    // установить смещение для отрисовки в дебаге
     // отрисовать дерево узлов в дебаге
+    setAnchorOffset(sel.anchorOffset)
     debugTree();
+
 
     // проверить наличие выделения мышкой
     // console.log(sel.isCollapsed)
 
-    // установить смещение для отрисовки в дебаге
-    setAnchorOffset(sel.anchorOffset)
 
     // всего строк
     setLinesWas(countWas = count);
-    setLines(count = content.textContent === '\n' ? 1 : content.textContent?.split("\n").length || 0)
-    // console.log(lines);
+    setLines(count = content.textContent?.replace(/\n$/, '')?.split("\n").length || 1)
+
 
     // создать диапозон для определения номера строки
     const range = new Range();
@@ -118,6 +125,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     setLineWas(lineWas = lineWas === 0 ? lineNum : line)
     setLine(line = lineNum)
   }
+
 
   function searchStart(node: Node, offset: number = -1) {
     const content = node.textContent || '';
@@ -146,6 +154,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
       }
     }
   }
+
 
   function debugTree() {
     debug.innerHTML = '';
@@ -176,6 +185,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     });
   }
 
+
   function insertRow() {
     let one = ids.slice(0, lineWas)
     let three = ids.slice(lineWas)
@@ -186,15 +196,19 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     setIds(ids = [...one, ...two, ...three]);
   }
 
+
   function deleteRow(keyCode: string) {
     if (count >= countWas) return;
 
-    let from = line;
-    from = keyCode === 'Delete' && line !== lineWas ? line - 1 : from;
-    ids.splice(from, countWas - count);
+    let from = (keyCode === 'Delete' && line !== lineWas) ? line - 1 : line;
+    let limit = countWas - count;
+    // console.log([...ids])
+    // console.log(from, limit)
+    ids.splice(from, limit);
 
     setIds(ids = [...ids]);
   }
+
 
   return (
     <div class={cssModule}>
