@@ -37,8 +37,9 @@ function App() {
 
   return <>
     <div class={cm.App}>
-      <Editor children={ttt1} />
-
+      <div style={{ width: "1024px", margin: "0 auto" }}>
+        <Editor children={ttt1} />
+      </div>
       {/* <h3>Количество пользователей: {store1.userCount}</h3>
 
       <button onClick={userCreate}>Добавить</button>

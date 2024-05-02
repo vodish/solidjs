@@ -37,7 +37,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
 
 
-  function click(e: MouseEvent) {
+  function click() {
     getPosition()
   }
 
@@ -66,11 +66,17 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
   }
 
-  function paste(e: ClipboardEvent) { }
+  function cut(e: ClipboardEvent) {
+    // console.log(e)
+  }
 
-  function input(e: InputEvent) { }
+  function paste(e: ClipboardEvent) {
 
-  function focus(e: FocusEvent) { }
+  }
+
+  function focus() {
+    getPosition()
+  }
 
 
 
@@ -193,7 +199,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   return (
     <div class={cssModule}>
       <div css-ids>{_ids().join("\n")}</div>
-      <div ref={content} css-editor contenteditable="plaintext-only" onPaste={paste} onInput={input} onKeyUp={keyup} onFocus={focus} onClick={click} >{children.rows.join("\n")}</div>
+      <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyUp={keyup} onCut={cut} onPaste={paste}>{children.rows.join("\n")}</div>
       <div css-tth>
         <div>lines: {_lines()} ({_linesWas()})</div>
         <div>line: {_line()} ({_lineWas()})</div>
