@@ -85,6 +85,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     const sel = document.getSelection()
     if (!sel || !sel.anchorNode) return;
 
+    // заменить BR на \n (иногда бывает)
+    if ( content.lastChild?.nodeName === 'BR' ) {
+      content.removeChild(content.lastChild)
+      content.appendChild(document.createTextNode('\n'))
+    }
+
 
     // вычислить начало строки: узел и позицию
     searchStart(sel.anchorNode, sel.anchorOffset);
@@ -194,8 +200,6 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
     let from = (keyCode === 'Delete' && line !== lineWas) ? line - 1 : line;
     let limit = countWas - count;
-    // console.log([...ids])
-    // console.log(from, limit)
     ids.splice(from, limit);
 
     setIds(ids = [...ids]);
