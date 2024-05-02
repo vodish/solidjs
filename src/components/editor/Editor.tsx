@@ -29,8 +29,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   const [_ids, setIds] = createSignal(ids)
   const [_line, setLine] = createSignal(line) // номер строки
   const [_lineWas, setLineWas] = createSignal(lineWas) // номер строки был
-  const [_count, setLines] = createSignal(count) // количество строк
-  const [_countWas, setLinesWas] = createSignal(countWas) // количество строк было
+  const [_count, setCount] = createSignal(count) // количество строк
+  const [_countWas, setCountWas] = createSignal(countWas) // количество строк было
   const [_anchorOffset, setAnchorOffset] = createSignal(ancorOffset)
   const [_startNode, setStartNode] = createSignal(startNode)
   const [_startOffset, setStartOffset] = createSignal(-1)
@@ -107,8 +107,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
 
     // всего строк
-    setLinesWas(countWas = count);
-    setLines(count = content.textContent?.replace(/\n$/, '').split("\n").length || 1)
+    setCountWas(countWas = count);
+    setCount(count = content.textContent?.replace(/\n$/, '').split("\n").length || 1)
 
 
     // создать диапозон для определения номера строки
