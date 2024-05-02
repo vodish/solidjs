@@ -18,10 +18,10 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   let debug!: HTMLDivElement;
   let max = Math.max.apply(null, children.ids);
   let ids = children.ids;
+  let count = 0;
+  let countWas = 0;
   let line = 0;
   let lineWas = 0;
-  let lines = 0;
-  let linesWas = 0;
   let ancorOffset = 0;
   let startNode: HTMLElement | Node = document.body;
   let startOffset = -1;
@@ -29,8 +29,8 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   const [_ids, setIds] = createSignal(ids)
   const [_line, setLine] = createSignal(line) // номер строки
   const [_lineWas, setLineWas] = createSignal(lineWas) // номер строки был
-  const [_lines, setLines] = createSignal(lines) // количество строк
-  const [_linesWas, setLinesWas] = createSignal(linesWas) // количество строк было
+  const [_count, setLines] = createSignal(count) // количество строк
+  const [_countWas, setLinesWas] = createSignal(countWas) // количество строк было
   const [_anchorOffset, setAnchorOffset] = createSignal(ancorOffset)
   const [_startNode, setStartNode] = createSignal(startNode)
   const [_startOffset, setStartOffset] = createSignal(-1)
@@ -102,16 +102,16 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     setAnchorOffset(sel.anchorOffset)
 
     // всего строк
-    setLinesWas(linesWas = lines);
-    setLines(lines = content.textContent === '\n' ? 1 : content.textContent?.split("\n").length || 0)
+    setLinesWas(countWas = count);
+    setLines(count = content.textContent === '\n' ? 1 : content.textContent?.split("\n").length || 0)
     // console.log(lines);
 
     // создать диапозон для определения номера строки
     const range = new Range();
     range.setStartBefore(content.firstChild as Node); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
-
     sel.addRange(range); // применить диапозон
+
     const textBefore = range.cloneContents().textContent; // скопировать текст диапозона
     const lineNum = textBefore?.split("\n").length || 0;
 
@@ -187,11 +187,11 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   }
 
   function deleteRow(keyCode: string) {
-    if (lines >= linesWas) return;
+    if (count >= countWas) return;
 
     let from = line;
     from = keyCode === 'Delete' && line !== lineWas ? line - 1 : from;
-    ids.splice(from, linesWas - lines);
+    ids.splice(from, countWas - count);
 
     setIds(ids = [...ids]);
   }
@@ -201,7 +201,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
       <div css-ids>{_ids().join("\n")}</div>
       <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyUp={keyup} onCut={cut} onPaste={paste}>{children.rows.join("\n")}</div>
       <div css-tth>
-        <div>lines: {_lines()} ({_linesWas()})</div>
+        <div>lines: {_count()} ({_countWas()})</div>
         <div>line: {_line()} ({_lineWas()})</div>
         <div>anchorOffset:{_anchorOffset()}</div>
         <div>startNode:{_startNode().nodeName}</div>
