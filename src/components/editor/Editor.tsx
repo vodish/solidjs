@@ -85,14 +85,6 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     const sel = document.getSelection()
     if (!sel || !sel.anchorNode) return;
 
-    if (!content.firstChild) {
-      content.appendChild(document.createTextNode('\n'));
-      console.log('\\n')
-    }
-
-    // content.textContent = content.textContent?.replace(/\n\n$/, '\n') as string;
-    
-
 
     // вычислить начало строки: узел и позицию
     searchStart(sel.anchorNode, sel.anchorOffset);
@@ -110,12 +102,12 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
 
     // всего строк
     setLinesWas(countWas = count);
-    setLines(count = content.textContent?.replace(/\n$/, '')?.split("\n").length || 1)
+    setLines(count = content.textContent?.split("\n").length || 1)
 
 
     // создать диапозон для определения номера строки
     const range = new Range();
-    range.setStartBefore(content.firstChild as Node); // от начала документа
+    range.setStartBefore(content); // от начала документа
     range.setEnd(sel.anchorNode, sel.anchorOffset); // до позиции курсора
     sel.addRange(range); // применить диапозон
 
