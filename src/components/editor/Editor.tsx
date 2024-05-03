@@ -1,8 +1,5 @@
-import { createEffect, createSignal, onMount } from "solid-js"
-import { unwrap } from "solid-js/store";
+import { createSignal } from "solid-js"
 import em from '../../Editor.module.css';
-
-// обработчики https://docs.solidjs.com/concepts/components/event-handlers
 
 
 type TEditorProp = {
@@ -26,8 +23,6 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
       offest: key === 0 ? 0 : (offsetRow += source[key - 1].str.length + 1)
     }
   })
-
-
 
 
   let count = 0;
