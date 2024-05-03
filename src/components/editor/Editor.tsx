@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from "solid-js"
+import { createEffect, createSignal, onMount } from "solid-js"
 import { unwrap } from "solid-js/store";
 import em from '../../Editor.module.css';
 
@@ -7,17 +7,29 @@ import em from '../../Editor.module.css';
 
 type TEditorProp = {
   cssModule?: CSSModuleClasses[string],
-  children?: {
-    ids: number[],
-    rows: string[],
-  }
+  source?: { id: number, str: string, offset?: number }[],
 }
 
-export default function Editor({ cssModule = em.editor, children = { ids: [1], rows: [''] } }: TEditorProp) {
-  let content!: HTMLDivElement;
-  let debug!: HTMLDivElement;
-  let max = Math.max.apply(null, children.ids);
-  let ids = children.ids;
+export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: '' }] }: TEditorProp) {
+  let content!: HTMLDivElement
+  let debug!: HTMLDivElement
+  let max = 0
+  let offsetRow = 0
+  let text = '';
+  let enter = 0;
+
+  source = source.map((el, key) => {
+    max = el.id > max ? el.id : max;
+    text += (!key ? '' : '\n') + el.str;
+    return {
+      ...el,
+      offest: key === 0 ? 0 : (offsetRow += source[key - 1].str.length + 1)
+    }
+  })
+
+
+
+
   let count = 0;
   let countWas = 0;
   let line = 0;
@@ -27,7 +39,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   let startNode: HTMLElement | Node = document.body;
   let startOffset = -1;
 
-  const [_ids, setIds] = createSignal(ids)
+  const [_ids, setIds] = createSignal([])
   const [_line, setLine] = createSignal(line) // номер строки
   const [_lineWas, setLineWas] = createSignal(lineWas) // номер строки был
   const [_count, setCount] = createSignal(count) // количество строк
@@ -44,15 +56,24 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   }
 
 
+  function keydown(e: KeyboardEvent) {
+    if (['Enter', 'NumpadEnter'].includes(e.code)) {
+      e.preventDefault()
+      enter++;
+    }
+  }
+
   function keyup(e: KeyboardEvent) {
-    
+
     // получить позицию
     getPosition()
 
     // if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) { }
-    
+
     // добавить строки
-    if (['Enter', 'NumpadEnter'].includes(e.code)) {
+    if (enter > 0) {
+      console.log('enter up', enter);
+      enter = 0;
       insertRow()
     }
 
@@ -88,7 +109,7 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
     if (!sel || !sel.anchorNode) return;
 
     // заменить BR на \n в последней строке
-    if ( content.lastChild?.nodeName === 'BR' ) {
+    if (content.lastChild?.nodeName === 'BR') {
       content.removeChild(content.lastChild)
       content.appendChild(document.createTextNode('\n'))
     }
@@ -191,44 +212,47 @@ export default function Editor({ cssModule = em.editor, children = { ids: [1], r
   }
 
   function insertRow() {
-    let one = ids.slice(0, lineWas)
-    let three = ids.slice(lineWas)
-    let two: number[] = []
-    for (let i = line - lineWas; i > 0; i--) {
-      two.push(++max);
-    }
-    setIds(ids = [...one, ...two, ...three]);
+    // let one = ids.slice(0, lineWas)
+    // let three = ids.slice(lineWas)
+    // let two: number[] = []
+    // for (let i = line - lineWas; i > 0; i--) {
+    //   two.push(++max);
+    // }
+    // setIds(ids = [...one, ...two, ...three]);
   }
 
 
   function deleteRow(keyCode: string) {
-    if (count >= countWas) return;
+    // if (count >= countWas) return;
 
-    let from = (keyCode === 'Delete' && line !== lineWas) ? line - 1 : line;
-    let limit = countWas - count;
-    ids.splice(from, limit);
+    // let from = (keyCode === 'Delete' && line !== lineWas) ? line - 1 : line;
+    // let limit = countWas - count;
+    // ids.splice(from, limit);
 
-    setIds(ids = [...ids]);
+    // setIds(ids = [...ids]);
   }
 
 
   return (
     <div class={cssModule}>
       <div css-ids>{_ids().join("\n")}</div>
-      <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyUp={keyup} onCut={cut} onPaste={paste}>{children.rows.join("\n")}</div>
+
+      <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyDown={keydown} onKeyUp={keyup} onCut={cut} onPaste={paste}>{text}</div>
+
       <div css-tth>
         <div>lines: {_count()} ({_countWas()})</div>
         <div>line: {_line()} ({_lineWas()})</div>
-          <div>sel</div>
-        <div style={{"padding-left": '1ch'}}>
+        <div>sel</div>
+        <div style={{ "padding-left": '1ch' }}>
           <div>.anchorOffset:{_sel()?.anchorOffset}</div>
         </div>
 
         <div>anchorOffset:{_anchorOffset()}</div>
-        
+
         <div>startNode:{_startNode().nodeName}</div>
         <div>startOffset:{_startOffset()}</div>
       </div>
+
       <div ref={debug} css-debugt />
     </div>
   )
