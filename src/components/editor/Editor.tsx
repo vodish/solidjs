@@ -13,7 +13,8 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   let max = 0
   let offsetRow = 0
   let text = '';
-  let enter = 0;
+  let addRow = 0;
+  let delRow = 0;
 
   source = source.map((el, key) => {
     max = el.id > max ? el.id : max;
@@ -54,25 +55,24 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   function keydown(e: KeyboardEvent) {
     if (['Enter', 'NumpadEnter'].includes(e.code)) {
       e.preventDefault()
-      enter++;
+      addRow++;
     }
   }
 
   function keyup(e: KeyboardEvent) {
+    // добавить строки
+    if (addRow > 0) {
+      insertRow()
+    }
+
+
+    // if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) { }
+
 
     // получить позицию
     getPosition()
 
-    // if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) { }
 
-    // добавить строки
-    if (enter > 0) {
-      // console.log('enter up', enter);
-      // navigator.clipboard.writeText('{\n}')
-      document.execCommand('insertHTML', false, '\n'.repeat(enter));
-      enter = 0;
-      // insertRow()
-    }
 
     if (['Delete', 'Backspace'].includes(e.code)) {
       deleteRow(e.code)
@@ -204,11 +204,12 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   }
 
 
-  function updateIds(keyCode: string) {
-
-  }
+  
 
   function insertRow() {
+    document.execCommand('insertHTML', false, '\n'.repeat(addRow));
+    addRow = 0;
+
     // let one = ids.slice(0, lineWas)
     // let three = ids.slice(lineWas)
     // let two: number[] = []
