@@ -67,9 +67,11 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
 
     // добавить строки
     if (enter > 0) {
-      console.log('enter up', enter);
+      // console.log('enter up', enter);
+      // navigator.clipboard.writeText('{\n}')
+      document.execCommand('insertHTML', false, '\n'.repeat(enter));
       enter = 0;
-      insertRow()
+      // insertRow()
     }
 
     if (['Delete', 'Backspace'].includes(e.code)) {
