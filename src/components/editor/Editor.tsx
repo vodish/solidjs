@@ -27,19 +27,19 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   })
 
 
-  const [_source, setSourse] = createSignal(source) // отображение строк
-  const [_count, setCount] = createSignal(count) // количество строк
+  const [_source, setSource] = createSignal(source) // отображение строк
+  const [_count0, setCount0] = createSignal(count) // количество строк было
+  const [_count, setCount] = createSignal(count) // количество строк сейчас
 
 
 
   let addRow = 0;
-  let delRow = 0;
   let sel = document.getSelection();
   let line = 0;
   let lineWas = 0;
   let ancorOffset = 0;
   let startNode: HTMLElement | Node = document.body;
-  let startOffset = -1;
+  
 
   const [_ids, setIds] = createSignal([])
   const [_line, setLine] = createSignal(line) // номер строки
@@ -262,7 +262,6 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
 
   return (
     <div class={cssModule}>
-
       <div css-ta css-view>
         <For each={_source()}>{el =>
           <div>
@@ -271,18 +270,14 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
           </div>
         }</For>
       </div>
+
       <textarea ref={ta} css-ta onInput={taInput} onKeyDown={taKeyDown} onKeyUp={taKeyUp}>{text}</textarea>
-
-      <div css-ids>{_ids().join("\n")}</div>
-      {/* <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyDown={keydown} onKeyUp={keyup} onCut={cut} onPaste={paste}>{text}</div> */}
-
+      
       <div css-tth>
-        <div>lines: {_count()} ({_countWas()})</div>
+        <div>count: ({_count0()}) {_count()}</div>
         <div>line: {_line()} ({_lineWas()})</div>
         <div>offset: ? (?)</div>
       </div>
-
-
     </div>
   )
 }
