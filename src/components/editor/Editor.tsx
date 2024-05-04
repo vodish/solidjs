@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js"
+import { For, createSignal } from "solid-js"
 import em from '../../Editor.module.css';
 
 
@@ -8,13 +8,14 @@ type TEditorProp = {
 }
 
 export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: '' }] }: TEditorProp) {
+  let ta!: HTMLTextAreaElement
   let content!: HTMLDivElement
   let debug!: HTMLDivElement
   let max = 0
-  let offsetRow = 0
+  let offsetRow = 0 // для offset строки
   let text = '';
-  let addRow = 0;
-  let delRow = 0;
+  let count = source.length - 1;
+  let countWas = 0;
 
   source = source.map((el, key) => {
     max = el.id > max ? el.id : max;
@@ -26,11 +27,16 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   })
 
 
-  let count = 0;
-  let countWas = 0;
+  const [_source, setSourse] = createSignal(source) // отображение строк
+  const [_count, setCount] = createSignal(count) // количество строк
+
+
+
+  let addRow = 0;
+  let delRow = 0;
+  let sel = document.getSelection();
   let line = 0;
   let lineWas = 0;
-  let sel = document.getSelection();
   let ancorOffset = 0;
   let startNode: HTMLElement | Node = document.body;
   let startOffset = -1;
@@ -38,7 +44,7 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   const [_ids, setIds] = createSignal([])
   const [_line, setLine] = createSignal(line) // номер строки
   const [_lineWas, setLineWas] = createSignal(lineWas) // номер строки был
-  const [_count, setCount] = createSignal(count) // количество строк
+
   const [_countWas, setCountWas] = createSignal(countWas) // количество строк было
   const [_sel, setSel] = createSignal(sel) // количество строк было
   const [_anchorOffset, setAnchorOffset] = createSignal(ancorOffset)
@@ -52,25 +58,16 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   }
 
 
-  function keydown(e: KeyboardEvent) {
-    if (['Enter', 'NumpadEnter'].includes(e.code)) {
-      e.preventDefault()
-      addRow++;
-    }
-  }
-
   function keyup(e: KeyboardEvent) {
     // добавить строки
-    if (addRow > 0) {
-      insertRow()
-    }
-
-
-    // if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) { }
-
+    insertRow()
 
     // получить позицию
     getPosition()
+
+
+
+    // if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'NumpadEnter', 'Delete', 'Backspace', 'KeyZ'].includes(e.code)) { }
 
 
 
@@ -204,11 +201,15 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   }
 
 
-  
+
 
   function insertRow() {
-    document.execCommand('insertHTML', false, '\n'.repeat(addRow));
-    addRow = 0;
+    if (addRow < 1) return;
+
+
+    // document.execCommand('insertHTML', false, '\n'.repeat(addRow));
+    // addRow = 0;
+
 
     // let one = ids.slice(0, lineWas)
     // let three = ids.slice(lineWas)
@@ -231,27 +232,57 @@ export default function Editor({ cssModule = em.editor, source = [{ id: 1, str: 
   }
 
 
+  function taInput() { //e: InputEvent
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight) + 'px';
+  }
+
+  function taKeyDown(e: KeyboardEvent) {
+    if (e.code === 'Tab') {
+      e.preventDefault()
+    }
+  }
+
+  function taPosition() {
+    // setCountWas(countWas = count)
+    // setCount(count = source.length)
+  }
+
+  function taKeyUp(e: KeyboardEvent) {
+
+    taPosition();
+
+    if (e.code === 'Tab' && !e.altKey && !e.ctrlKey) {      // добавить пробелы к строкам или emmet
+      e.preventDefault()
+      ta.setRangeText('    ', ta.selectionStart, ta.selectionEnd, 'end')
+
+      // !e.shiftKey
+    }
+  }
+
   return (
     <div class={cssModule}>
-      <div css-ids>{_ids().join("\n")}</div>
 
-      <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyDown={keydown} onKeyUp={keyup} onCut={cut} onPaste={paste}>{text}</div>
+      <div css-ta css-view>
+        <For each={_source()}>{el =>
+          <div>
+            <div css-id>{el.id}</div>
+            <div css-str>{el.str}</div>
+          </div>
+        }</For>
+      </div>
+      <textarea ref={ta} css-ta onInput={taInput} onKeyDown={taKeyDown} onKeyUp={taKeyUp}>{text}</textarea>
+
+      <div css-ids>{_ids().join("\n")}</div>
+      {/* <div ref={content} css-editor contenteditable="plaintext-only" onFocus={focus} onClick={click} onKeyDown={keydown} onKeyUp={keyup} onCut={cut} onPaste={paste}>{text}</div> */}
 
       <div css-tth>
         <div>lines: {_count()} ({_countWas()})</div>
         <div>line: {_line()} ({_lineWas()})</div>
-        <div>sel</div>
-        <div style={{ "padding-left": '1ch' }}>
-          <div>.anchorOffset:{_sel()?.anchorOffset}</div>
-        </div>
-
-        <div>anchorOffset:{_anchorOffset()}</div>
-
-        <div>startNode:{_startNode().nodeName}</div>
-        <div>startOffset:{_startOffset()}</div>
+        <div>offset: ? (?)</div>
       </div>
 
-      <div ref={debug} css-debugt />
+
     </div>
   )
 }
